@@ -143,10 +143,10 @@ export default function Header({
                   backgroundColor:
                     wordMode === mode ? "var(--bg-card)" : "transparent",
                   color:
-                    wordMode === mode ? "var(--accent)" : "var(--text-dim)",
+                    wordMode === mode ? "var(--accent)" : "var(--text)",
                   boxShadow:
                     wordMode === mode ? "0 1px 4px rgba(0,0,0,0.3)" : "none",
-                  opacity: isRunning && wordMode !== mode ? 0.4 : 1,
+                  opacity: wordMode === mode ? 1 : (isRunning ? 0.35 : 0.55),
                   cursor: isRunning ? "default" : "pointer",
                 }}
                 disabled={isRunning}
@@ -178,12 +178,12 @@ export default function Header({
                   backgroundColor:
                     currentTimer === time ? "var(--bg-card)" : "transparent",
                   color:
-                    currentTimer === time ? "var(--accent)" : "var(--text-dim)",
+                    currentTimer === time ? "var(--accent)" : "var(--text)",
                   boxShadow:
                     currentTimer === time
                       ? "0 1px 4px rgba(0,0,0,0.3)"
                       : "none",
-                  opacity: isRunning && currentTimer !== time ? 0.4 : 1,
+                  opacity: currentTimer === time ? 1 : (isRunning ? 0.35 : 0.55),
                   cursor: isRunning ? "default" : "pointer",
                 }}
                 disabled={isRunning}
@@ -202,12 +202,12 @@ export default function Header({
                 backgroundColor:
                   currentTimer === 0 ? "var(--bg-card)" : "transparent",
                 color:
-                  currentTimer === 0 ? "var(--accent)" : "var(--text-dim)",
+                  currentTimer === 0 ? "var(--accent)" : "var(--text)",
                 boxShadow:
                   currentTimer === 0
                     ? "0 1px 4px rgba(0,0,0,0.3)"
                     : "none",
-                opacity: isRunning && currentTimer !== 0 ? 0.4 : 1,
+                opacity: currentTimer === 0 ? 1 : (isRunning ? 0.35 : 0.55),
                 cursor: isRunning ? "default" : "pointer",
               }}
               disabled={isRunning}
