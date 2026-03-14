@@ -19,7 +19,7 @@ interface TypedChar {
 
 export default function Home() {
   // Theme & timer & sound
-  const [theme, setTheme] = useState("default");
+  const [theme, setTheme] = useState("mono");
   const [timerDuration, setTimerDuration] = useState(30);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [soundProfile, setSoundProfile] = useState<SoundProfile>("bubble");

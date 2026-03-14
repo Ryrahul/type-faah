@@ -5,6 +5,7 @@ import type { SoundProfile } from "../lib/sounds";
 import type { WordMode } from "../lib/words";
 
 const themes = [
+  { id: "mono", color: "#888888", label: "Mono" },
   { id: "default", color: "#a7c4a0", label: "Sage" },
   { id: "ocean", color: "#1a5276", label: "Ocean" },
   { id: "lavender", color: "#9b59b6", label: "Lavender" },
@@ -15,7 +16,6 @@ const themes = [
   { id: "forest", color: "#6ecf6e", label: "Forest" },
   { id: "copper", color: "#d4915c", label: "Copper" },
   { id: "arctic", color: "#80d8e0", label: "Arctic" },
-  { id: "mono", color: "#888888", label: "Mono" },
 ];
 
 const timerOptions = [15, 30, 60, 120];
