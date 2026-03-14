@@ -15,6 +15,9 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "bakchodi / type",
   description: "An aesthetic keyboard typing test",
+  icons: {
+    icon: "/favicon.png",
+  },
 };
 
 export default function RootLayout({
