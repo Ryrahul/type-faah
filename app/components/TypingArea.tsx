@@ -191,10 +191,10 @@ export default function TypingArea({
     }
   }, [words]);
 
-  const visibleRange = useMemo(() => {
-    const start = Math.max(0, currentWordIndex - 30);
-    const end = Math.min(words.length, currentWordIndex + 60);
-    return { start, end };
+  // Don't slice from the start - removing DOM nodes shifts offsetTop
+  // and breaks scroll calculation. Only cap how far ahead we render.
+  const visibleEnd = useMemo(() => {
+    return Math.min(words.length, currentWordIndex + 80);
   }, [currentWordIndex, words.length]);
 
   return (
@@ -272,8 +272,8 @@ export default function TypingArea({
             transition: "transform 0.35s cubic-bezier(0.25, 0.1, 0.25, 1)",
           }}
         >
-          {words.slice(visibleRange.start, visibleRange.end).map((word, idx) => {
-            const actualIdx = visibleRange.start + idx;
+          {words.slice(0, visibleEnd).map((word, idx) => {
+            const actualIdx = idx;
             const isCurrentWord = actualIdx === currentWordIndex;
             const isTypedWord = actualIdx < currentWordIndex;
             const wordTyped = typedChars[actualIdx] || [];
