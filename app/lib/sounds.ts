@@ -299,6 +299,34 @@ export function playSpaceSound(profile: SoundProfile) {
   try { spaceFns[profile](ctx()); } catch { /* */ }
 }
 
+// Preload mistake milestone audio
+let mistake5Audio: HTMLAudioElement | null = null;
+let mistake10Audio: HTMLAudioElement | null = null;
+
+function ensureMistakeAudio() {
+  if (!mistake5Audio) {
+    mistake5Audio = new Audio("/sounds/mistake-5.mp3");
+    mistake5Audio.volume = 0.7;
+  }
+  if (!mistake10Audio) {
+    mistake10Audio = new Audio("/sounds/mistake-10.mp3");
+    mistake10Audio.volume = 0.7;
+  }
+}
+
+export function playMistakeSound(totalMistakes: number) {
+  try {
+    ensureMistakeAudio();
+    if (totalMistakes === 5 && mistake5Audio) {
+      mistake5Audio.currentTime = 0;
+      mistake5Audio.play();
+    } else if (totalMistakes === 10 && mistake10Audio) {
+      mistake10Audio.currentTime = 0;
+      mistake10Audio.play();
+    }
+  } catch { /* */ }
+}
+
 export function playCompleteSound() {
   try {
     const c = ctx(); const now = c.currentTime;

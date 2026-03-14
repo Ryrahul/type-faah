@@ -6,7 +6,7 @@ import TypingArea from "./components/TypingArea";
 import Keyboard from "./components/Keyboard";
 import Results from "./components/Results";
 import { generateWords } from "./lib/words";
-import { playKeySound, playSpaceSound, playCompleteSound } from "./lib/sounds";
+import { playKeySound, playSpaceSound, playCompleteSound, playMistakeSound } from "./lib/sounds";
 import type { SoundProfile } from "./lib/sounds";
 
 type GameState = "idle" | "running" | "finished";
@@ -51,6 +51,8 @@ export default function Home() {
   soundProfileRef.current = soundProfile;
   const correctCharsRef = useRef(correctChars);
   correctCharsRef.current = correctChars;
+  const incorrectCharsRef = useRef(incorrectChars);
+  incorrectCharsRef.current = incorrectChars;
 
   // Live WPM calculation
   useEffect(() => {
@@ -221,6 +223,11 @@ export default function Home() {
           setCorrectChars((prev) => prev + 1);
         } else {
           setIncorrectChars((prev) => prev + 1);
+          // Play milestone mistake sounds at 5 and 10 errors
+          const newCount = incorrectCharsRef.current + 1;
+          if (soundEnabledRef.current && (newCount === 5 || newCount === 10)) {
+            playMistakeSound(newCount);
+          }
         }
         setTotalCharsTyped((prev) => prev + 1);
 
