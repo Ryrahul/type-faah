@@ -4,20 +4,18 @@ function getAudioContext(): AudioContext {
   if (!audioContext) {
     audioContext = new AudioContext();
   }
-  // Resume if suspended (browser autoplay policy)
   if (audioContext.state === "suspended") {
     audioContext.resume();
   }
   return audioContext;
 }
 
-// Pre-generate noise buffers for performance
+// Pre-generate noise buffer once
 let noiseBuffer: AudioBuffer | null = null;
 
 function getNoiseBuffer(ctx: AudioContext): AudioBuffer {
   if (!noiseBuffer || noiseBuffer.sampleRate !== ctx.sampleRate) {
-    // Create 0.1s of white noise
-    const length = ctx.sampleRate * 0.1;
+    const length = ctx.sampleRate * 0.15;
     noiseBuffer = ctx.createBuffer(1, length, ctx.sampleRate);
     const data = noiseBuffer.getChannelData(0);
     for (let i = 0; i < length; i++) {
@@ -28,191 +26,212 @@ function getNoiseBuffer(ctx: AudioContext): AudioBuffer {
 }
 
 /**
- * Thocky mechanical keyboard sound.
- * Built from shaped noise bursts - no oscillators, no buzzy tones.
- * A "thock" = fast attack noise filtered through a resonant lowpass
- * to give it a warm, deep, satisfying character.
+ * Lubed linear switch sound.
+ *
+ * Lubed switches are characterized by:
+ * - Almost zero high-frequency content (no scratch, no click)
+ * - Very short, soft, muted "pop" on bottom-out
+ * - Warm low-mid frequency character
+ * - Extremely fast decay (dampened by lube)
+ * - Quiet overall volume
+ *
+ * Think: a soft finger tap on a padded desk.
  */
 export function playKeySound(isCorrect: boolean = true) {
   try {
     const ctx = getAudioContext();
     const now = ctx.currentTime;
 
-    // Small random variation for natural feel
-    const pitchVar = 0.9 + Math.random() * 0.2;
-    const volVar = 0.85 + Math.random() * 0.15;
+    // Subtle random variation so each key sounds slightly different
+    const pitch = 0.92 + Math.random() * 0.16;
+    const vol = 0.88 + Math.random() * 0.12;
 
-    // === Layer 1: The "thock" body ===
-    // Noise burst shaped by a bandpass to give it the warm thock character
-    const thockSource = ctx.createBufferSource();
-    thockSource.buffer = getNoiseBuffer(ctx);
+    // === The soft "pop" - muted bottom-out ===
+    // Very low-passed noise, short duration = dampened thock
+    const popSource = ctx.createBufferSource();
+    popSource.buffer = getNoiseBuffer(ctx);
 
-    const thockFilter = ctx.createBiquadFilter();
-    thockFilter.type = "bandpass";
-    thockFilter.frequency.setValueAtTime(800 * pitchVar, now);
-    thockFilter.Q.setValueAtTime(1.2, now);
+    const popLP = ctx.createBiquadFilter();
+    popLP.type = "lowpass";
+    popLP.frequency.setValueAtTime(600 * pitch, now);
+    popLP.Q.setValueAtTime(0.8, now);
+    // Frequency drops quickly = sound dies fast like lube dampening
+    popLP.frequency.exponentialRampToValueAtTime(200, now + 0.04);
 
-    const thockGain = ctx.createGain();
-    thockGain.gain.setValueAtTime(0.12 * volVar, now);
-    thockGain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+    const popGain = ctx.createGain();
+    popGain.gain.setValueAtTime(0.09 * vol, now);
+    popGain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
 
-    thockSource.connect(thockFilter);
-    thockFilter.connect(thockGain);
-    thockGain.connect(ctx.destination);
+    popSource.connect(popLP);
+    popLP.connect(popGain);
+    popGain.connect(ctx.destination);
 
-    thockSource.start(now);
-    thockSource.stop(now + 0.08);
+    popSource.start(now);
+    popSource.stop(now + 0.05);
 
-    // === Layer 2: The "click" top ===
-    // Higher frequency short burst for the initial impact
-    const clickSource = ctx.createBufferSource();
-    clickSource.buffer = getNoiseBuffer(ctx);
+    // === Tiny "tik" at attack - the stem hitting housing ===
+    // Very quiet, very short, slightly higher than the pop
+    const tikSource = ctx.createBufferSource();
+    tikSource.buffer = getNoiseBuffer(ctx);
 
-    const clickFilter = ctx.createBiquadFilter();
-    clickFilter.type = "highpass";
-    clickFilter.frequency.setValueAtTime(2500 * pitchVar, now);
-    clickFilter.Q.setValueAtTime(0.7, now);
+    const tikBP = ctx.createBiquadFilter();
+    tikBP.type = "bandpass";
+    tikBP.frequency.setValueAtTime(1200 * pitch, now);
+    tikBP.Q.setValueAtTime(2, now);
 
-    const clickGain = ctx.createGain();
-    clickGain.gain.setValueAtTime(0.06 * volVar, now);
-    clickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
+    const tikLP = ctx.createBiquadFilter();
+    tikLP.type = "lowpass";
+    tikLP.frequency.setValueAtTime(2000, now);
 
-    clickSource.connect(clickFilter);
-    clickFilter.connect(clickGain);
-    clickGain.connect(ctx.destination);
+    const tikGain = ctx.createGain();
+    tikGain.gain.setValueAtTime(0.035 * vol, now);
+    tikGain.gain.exponentialRampToValueAtTime(0.001, now + 0.015);
 
-    clickSource.start(now);
-    clickSource.stop(now + 0.03);
+    tikSource.connect(tikBP);
+    tikBP.connect(tikLP);
+    tikLP.connect(tikGain);
+    tikGain.connect(ctx.destination);
 
-    // === Layer 3: Low-end "bottom out" thud ===
-    const thudSource = ctx.createBufferSource();
-    thudSource.buffer = getNoiseBuffer(ctx);
+    tikSource.start(now);
+    tikSource.stop(now + 0.02);
 
-    const thudFilter = ctx.createBiquadFilter();
-    thudFilter.type = "lowpass";
-    thudFilter.frequency.setValueAtTime(400 * pitchVar, now);
-    thudFilter.Q.setValueAtTime(2, now);
+    // === Sub-bass body - the case resonance ===
+    // Very low rumble that gives it "depth" without being loud
+    const subSource = ctx.createBufferSource();
+    subSource.buffer = getNoiseBuffer(ctx);
 
-    const thudGain = ctx.createGain();
-    thudGain.gain.setValueAtTime(0.08 * volVar, now);
-    thudGain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+    const subLP = ctx.createBiquadFilter();
+    subLP.type = "lowpass";
+    subLP.frequency.setValueAtTime(180 * pitch, now);
+    subLP.Q.setValueAtTime(1.5, now);
 
-    thudSource.connect(thudFilter);
-    thudFilter.connect(thudGain);
-    thudGain.connect(ctx.destination);
+    const subGain = ctx.createGain();
+    subGain.gain.setValueAtTime(0.07 * vol, now);
+    subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.055);
 
-    thudSource.start(now);
-    thudSource.stop(now + 0.06);
+    subSource.connect(subLP);
+    subLP.connect(subGain);
+    subGain.connect(ctx.destination);
 
-    // If incorrect, add a subtle lower-pitched resonance
+    subSource.start(now);
+    subSource.stop(now + 0.06);
+
+    // Error: slightly longer, very subtle dull tone underneath
     if (!isCorrect) {
-      const errSource = ctx.createBufferSource();
-      errSource.buffer = getNoiseBuffer(ctx);
-
-      const errFilter = ctx.createBiquadFilter();
-      errFilter.type = "bandpass";
-      errFilter.frequency.setValueAtTime(350, now);
-      errFilter.Q.setValueAtTime(3, now);
-
+      const errOsc = ctx.createOscillator();
       const errGain = ctx.createGain();
-      errGain.gain.setValueAtTime(0.06, now);
-      errGain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+      const errLP = ctx.createBiquadFilter();
 
-      errSource.connect(errFilter);
-      errFilter.connect(errGain);
+      errOsc.type = "sine";
+      errOsc.frequency.setValueAtTime(180, now);
+
+      errLP.type = "lowpass";
+      errLP.frequency.setValueAtTime(300, now);
+
+      errGain.gain.setValueAtTime(0.04, now);
+      errGain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+
+      errOsc.connect(errLP);
+      errLP.connect(errGain);
       errGain.connect(ctx.destination);
 
-      errSource.start(now);
-      errSource.stop(now + 0.1);
+      errOsc.start(now);
+      errOsc.stop(now + 0.08);
     }
   } catch {
-    // Audio not supported or blocked
+    // Audio not available
   }
 }
 
 /**
- * Spacebar has a deeper, longer thock - like a stabilizer bar bottoming out.
+ * Lubed spacebar - deeper, slightly longer, stabilizers are also lubed
+ * so no rattle, just a smooth deeper version of the key sound.
  */
 export function playSpaceSound() {
   try {
     const ctx = getAudioContext();
     const now = ctx.currentTime;
-    const volVar = 0.9 + Math.random() * 0.1;
+    const vol = 0.9 + Math.random() * 0.1;
 
-    // === Deep thock body ===
-    const bodySource = ctx.createBufferSource();
-    bodySource.buffer = getNoiseBuffer(ctx);
+    // === Deep muted pop ===
+    const popSource = ctx.createBufferSource();
+    popSource.buffer = getNoiseBuffer(ctx);
 
-    const bodyFilter = ctx.createBiquadFilter();
-    bodyFilter.type = "bandpass";
-    bodyFilter.frequency.setValueAtTime(500, now);
-    bodyFilter.Q.setValueAtTime(1.5, now);
+    const popLP = ctx.createBiquadFilter();
+    popLP.type = "lowpass";
+    popLP.frequency.setValueAtTime(450, now);
+    popLP.Q.setValueAtTime(1, now);
+    popLP.frequency.exponentialRampToValueAtTime(120, now + 0.06);
 
-    const bodyGain = ctx.createGain();
-    bodyGain.gain.setValueAtTime(0.14 * volVar, now);
-    bodyGain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+    const popGain = ctx.createGain();
+    popGain.gain.setValueAtTime(0.11 * vol, now);
+    popGain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
 
-    bodySource.connect(bodyFilter);
-    bodyFilter.connect(bodyGain);
-    bodyGain.connect(ctx.destination);
+    popSource.connect(popLP);
+    popLP.connect(popGain);
+    popGain.connect(ctx.destination);
 
-    bodySource.start(now);
-    bodySource.stop(now + 0.12);
+    popSource.start(now);
+    popSource.stop(now + 0.07);
 
-    // === Low thud (stabilizer rattle) ===
-    const thudSource = ctx.createBufferSource();
-    thudSource.buffer = getNoiseBuffer(ctx);
+    // === Sub thud - larger keycap = more low end ===
+    const subSource = ctx.createBufferSource();
+    subSource.buffer = getNoiseBuffer(ctx);
 
-    const thudFilter = ctx.createBiquadFilter();
-    thudFilter.type = "lowpass";
-    thudFilter.frequency.setValueAtTime(250, now);
-    thudFilter.Q.setValueAtTime(2.5, now);
+    const subLP = ctx.createBiquadFilter();
+    subLP.type = "lowpass";
+    subLP.frequency.setValueAtTime(130, now);
+    subLP.Q.setValueAtTime(2, now);
 
-    const thudGain = ctx.createGain();
-    thudGain.gain.setValueAtTime(0.1 * volVar, now);
-    thudGain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+    const subGain = ctx.createGain();
+    subGain.gain.setValueAtTime(0.09 * vol, now);
+    subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
 
-    thudSource.connect(thudFilter);
-    thudFilter.connect(thudGain);
-    thudGain.connect(ctx.destination);
+    subSource.connect(subLP);
+    subLP.connect(subGain);
+    subGain.connect(ctx.destination);
 
-    thudSource.start(now);
-    thudSource.stop(now + 0.09);
+    subSource.start(now);
+    subSource.stop(now + 0.08);
 
-    // === Subtle click on top ===
-    const clickSource = ctx.createBufferSource();
-    clickSource.buffer = getNoiseBuffer(ctx);
+    // === Gentle muted tap ===
+    const tapSource = ctx.createBufferSource();
+    tapSource.buffer = getNoiseBuffer(ctx);
 
-    const clickFilter = ctx.createBiquadFilter();
-    clickFilter.type = "highpass";
-    clickFilter.frequency.setValueAtTime(1800, now);
-    clickFilter.Q.setValueAtTime(0.5, now);
+    const tapBP = ctx.createBiquadFilter();
+    tapBP.type = "bandpass";
+    tapBP.frequency.setValueAtTime(800, now);
+    tapBP.Q.setValueAtTime(1.5, now);
 
-    const clickGain = ctx.createGain();
-    clickGain.gain.setValueAtTime(0.04 * volVar, now);
-    clickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
+    const tapLP = ctx.createBiquadFilter();
+    tapLP.type = "lowpass";
+    tapLP.frequency.setValueAtTime(1200, now);
 
-    clickSource.connect(clickFilter);
-    clickFilter.connect(clickGain);
-    clickGain.connect(ctx.destination);
+    const tapGain = ctx.createGain();
+    tapGain.gain.setValueAtTime(0.025 * vol, now);
+    tapGain.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
 
-    clickSource.start(now);
-    clickSource.stop(now + 0.02);
+    tapSource.connect(tapBP);
+    tapBP.connect(tapLP);
+    tapLP.connect(tapGain);
+    tapGain.connect(ctx.destination);
+
+    tapSource.start(now);
+    tapSource.stop(now + 0.025);
   } catch {
-    // Audio not supported
+    // Audio not available
   }
 }
 
 /**
- * Completion sound - gentle warm chime, not harsh.
+ * Completion - soft warm tone
  */
 export function playCompleteSound() {
   try {
     const ctx = getAudioContext();
     const now = ctx.currentTime;
 
-    // Soft sine chord with gentle attack
-    const notes = [440, 554.37, 659.25]; // A4, C#5, E5 (A major)
+    const notes = [392, 493.88, 587.33]; // G4, B4, D5 (G major - warmer)
     notes.forEach((freq, i) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
@@ -222,21 +241,21 @@ export function playCompleteSound() {
       osc.frequency.setValueAtTime(freq, now);
 
       filter.type = "lowpass";
-      filter.frequency.setValueAtTime(2000, now);
+      filter.frequency.setValueAtTime(1500, now);
+      filter.Q.setValueAtTime(0.5, now);
 
-      // Gentle fade in, slow fade out
-      gain.gain.setValueAtTime(0, now + i * 0.12);
-      gain.gain.linearRampToValueAtTime(0.06, now + i * 0.12 + 0.08);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.12 + 0.8);
+      gain.gain.setValueAtTime(0, now + i * 0.15);
+      gain.gain.linearRampToValueAtTime(0.045, now + i * 0.15 + 0.1);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.15 + 1.0);
 
       osc.connect(filter);
       filter.connect(gain);
       gain.connect(ctx.destination);
 
-      osc.start(now + i * 0.12);
-      osc.stop(now + i * 0.12 + 0.8);
+      osc.start(now + i * 0.15);
+      osc.stop(now + i * 0.15 + 1.0);
     });
   } catch {
-    // Audio not supported
+    // Audio not available
   }
 }
