@@ -10,7 +10,7 @@ function ctx(): AudioContext {
     audioContext = new AudioContext();
     // Master volume boost - all sounds route through this
     masterGain = audioContext.createGain();
-    masterGain.gain.value = 3.5;
+    masterGain.gain.value = 3.0;
     masterGain.connect(audioContext.destination);
   }
   if (audioContext.state === "suspended") audioContext.resume();

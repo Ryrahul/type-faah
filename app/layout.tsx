@@ -13,7 +13,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "keyb / type",
+  title: "bakchodi / type",
   description: "An aesthetic keyboard typing test",
 };
 

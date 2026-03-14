@@ -83,7 +83,7 @@ export default function Header({
             className="text-[22px] font-bold tracking-tight"
             style={{ color: "var(--accent)" }}
           >
-            keyb
+            bakchodi
           </span>
           <span
             className="text-[22px] font-light"
