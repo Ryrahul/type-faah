@@ -3,11 +3,22 @@ export type SoundProfile =
   | "rainy" | "muted" | "typewriter" | "asmr" | "bubble";
 
 let audioContext: AudioContext | null = null;
+let masterGain: GainNode | null = null;
 
 function ctx(): AudioContext {
-  if (!audioContext) audioContext = new AudioContext();
+  if (!audioContext) {
+    audioContext = new AudioContext();
+    // Master volume boost - all sounds route through this
+    masterGain = audioContext.createGain();
+    masterGain.gain.value = 3.0;
+    masterGain.connect(audioContext.destination);
+  }
   if (audioContext.state === "suspended") audioContext.resume();
   return audioContext;
+}
+
+function dest(c: AudioContext): AudioNode {
+  return masterGain || c.destination;
 }
 
 let _noise: AudioBuffer | null = null;
@@ -33,7 +44,7 @@ function burst(
   if (freqEnd) f.frequency.exponentialRampToValueAtTime(freqEnd, now + dur);
   const g = c.createGain(); g.gain.setValueAtTime(vol, now);
   g.gain.exponentialRampToValueAtTime(0.001, now + dur);
-  s.connect(f); f.connect(g); g.connect(c.destination);
+  s.connect(f); f.connect(g); g.connect(dest(c));
   s.start(now); s.stop(now + dur + 0.01);
 }
 
@@ -44,7 +55,7 @@ function blip(c: AudioContext, now: number, freq: number, vol: number, dur: numb
   if (freqEnd) o.frequency.exponentialRampToValueAtTime(freqEnd, now + dur);
   const g = c.createGain(); g.gain.setValueAtTime(vol, now);
   g.gain.exponentialRampToValueAtTime(0.001, now + dur);
-  o.connect(g); g.connect(c.destination); o.start(now); o.stop(now + dur + 0.01);
+  o.connect(g); g.connect(dest(c)); o.start(now); o.stop(now + dur + 0.01);
 }
 
 const R = () => 0.92 + Math.random() * 0.16; // pitch variation
@@ -80,7 +91,7 @@ function clackKey(c: AudioContext) {
   lp.frequency.exponentialRampToValueAtTime(2000, now + 0.015);
   const g = c.createGain(); g.gain.setValueAtTime(0.07 * v, now);
   g.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
-  o.connect(lp); lp.connect(g); g.connect(c.destination);
+  o.connect(lp); lp.connect(g); g.connect(dest(c));
   o.start(now); o.stop(now + 0.025);
   // Snap noise
   burst(c, now, 3500 * p, 1.5, "bandpass", 0.1 * v, 0.018);
@@ -98,7 +109,7 @@ function clackSpace(c: AudioContext) {
   const lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.setValueAtTime(5000, now);
   lp.frequency.exponentialRampToValueAtTime(1500, now + 0.02);
   const g = c.createGain(); g.gain.setValueAtTime(0.065 * v, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
-  o.connect(lp); lp.connect(g); g.connect(c.destination); o.start(now); o.stop(now + 0.03);
+  o.connect(lp); lp.connect(g); g.connect(dest(c)); o.start(now); o.stop(now + 0.03);
   burst(c, now, 2500, 1, "bandpass", 0.09 * v, 0.02);
   burst(c, now, 600, 1.5, "lowpass", 0.13 * v, 0.09, 150);
   burst(c, now + 0.015, 1800, 3, "bandpass", 0.04 * v, 0.04);
@@ -199,7 +210,7 @@ function typewriterKey(c: AudioContext) {
   lp.frequency.setValueAtTime(4000, now); lp.frequency.exponentialRampToValueAtTime(1000, now + 0.02);
   const g = c.createGain(); g.gain.setValueAtTime(0.06 * v, now);
   g.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
-  o.connect(lp); lp.connect(g); g.connect(c.destination); o.start(now); o.stop(now + 0.03);
+  o.connect(lp); lp.connect(g); g.connect(dest(c)); o.start(now); o.stop(now + 0.03);
   // Metal hit
   burst(c, now, 2000 * p, 2.5, "bandpass", 0.09 * v, 0.02);
   // Paper/platen thud
@@ -299,7 +310,7 @@ export function playCompleteSound() {
       g.gain.setValueAtTime(0, now + i * 0.15);
       g.gain.linearRampToValueAtTime(0.045, now + i * 0.15 + 0.1);
       g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.15 + 1.0);
-      o.connect(f); f.connect(g); g.connect(c.destination);
+      o.connect(f); f.connect(g); g.connect(dest(c));
       o.start(now + i * 0.15); o.stop(now + i * 0.15 + 1.0);
     });
   } catch { /* */ }
