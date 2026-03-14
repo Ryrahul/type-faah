@@ -7,6 +7,7 @@ import Keyboard from "./components/Keyboard";
 import Results from "./components/Results";
 import { generateWords } from "./lib/words";
 import { playKeySound, playSpaceSound, playCompleteSound } from "./lib/sounds";
+import type { SoundProfile } from "./lib/sounds";
 
 type GameState = "idle" | "running" | "finished";
 
@@ -20,6 +21,7 @@ export default function Home() {
   const [theme, setTheme] = useState("default");
   const [timerDuration, setTimerDuration] = useState(30);
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [soundProfile, setSoundProfile] = useState<SoundProfile>("lubed");
 
   // Game state
   const [gameState, setGameState] = useState<GameState>("idle");
@@ -45,10 +47,12 @@ export default function Home() {
   const inputRef = useRef<HTMLInputElement>(null);
   const soundEnabledRef = useRef(soundEnabled);
   soundEnabledRef.current = soundEnabled;
+  const soundProfileRef = useRef(soundProfile);
+  soundProfileRef.current = soundProfile;
   const correctCharsRef = useRef(correctChars);
   correctCharsRef.current = correctChars;
 
-  // Live WPM calculation - uses refs to avoid re-creating interval on every keystroke
+  // Live WPM calculation
   useEffect(() => {
     if (gameState !== "running" || !startTime) {
       setLiveWpm(0);
@@ -136,7 +140,6 @@ export default function Home() {
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
-    // Focus input after restart
     setTimeout(() => {
       inputRef.current?.focus();
       setIsFocused(true);
@@ -151,14 +154,11 @@ export default function Home() {
   // Handle keyboard input
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent | KeyboardEvent) => {
-      // Prevent default for keys we handle
-      // Tab key tracking for Tab+Enter restart
       if (e.key === "Tab") {
         e.preventDefault();
         return;
       }
 
-      // Restart shortcut: Tab+Enter or Cmd+Enter
       if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
         e.preventDefault();
         restartGame();
@@ -171,7 +171,6 @@ export default function Home() {
         inputRef.current?.focus();
       }
 
-      // Track pressed keys for keyboard visualization
       setPressedKeys((prev) => new Set(prev).add(e.code));
 
       const currentWord = words[currentWordIndex];
@@ -180,7 +179,7 @@ export default function Home() {
       if (e.key === "Backspace") {
         e.preventDefault();
         if (currentCharIndex > 0) {
-          if (soundEnabledRef.current) playKeySound(true);
+          if (soundEnabledRef.current) playKeySound(soundProfileRef.current, true);
           setCurrentCharIndex((prev) => prev - 1);
           setTypedChars((prev) => {
             const newTyped = [...prev];
@@ -195,27 +194,23 @@ export default function Home() {
 
       if (e.key === " ") {
         e.preventDefault();
-        if (currentCharIndex === 0) return; // Don't allow empty words
+        if (currentCharIndex === 0) return;
 
-        if (soundEnabledRef.current) playSpaceSound();
+        if (soundEnabledRef.current) playSpaceSound(soundProfileRef.current);
 
-        // Move to next word
         setCurrentWordIndex((prev) => prev + 1);
         setCurrentCharIndex(0);
-        setTotalCharsTyped((prev) => prev + 1); // Count space
+        setTotalCharsTyped((prev) => prev + 1);
 
-        // Check if we need more words
         if (currentWordIndex >= words.length - 20) {
           setWords((prev) => [...prev, ...generateWords(100)]);
         }
         return;
       }
 
-      // Regular character input
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
         e.preventDefault();
 
-        // Start game on first keypress
         if (gameState === "idle") {
           startGame();
         }
@@ -229,7 +224,7 @@ export default function Home() {
         }
         setTotalCharsTyped((prev) => prev + 1);
 
-        if (soundEnabledRef.current) playKeySound(isCorrect);
+        if (soundEnabledRef.current) playKeySound(soundProfileRef.current, isCorrect);
 
         setTypedChars((prev) => {
           const newTyped = [...prev];
@@ -264,7 +259,6 @@ export default function Home() {
   // Global keyboard listener
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
-      // Don't capture if user is typing in a different input
       if (
         e.target instanceof HTMLElement &&
         e.target !== inputRef.current &&
@@ -272,7 +266,6 @@ export default function Home() {
       ) {
         return;
       }
-
       handleKeyDown(e);
     };
 
@@ -323,7 +316,6 @@ export default function Home() {
       className="min-h-screen flex flex-col transition-colors duration-400"
       style={{ backgroundColor: "var(--bg)" }}
     >
-      {/* Hidden input for mobile and focus management */}
       <input
         ref={inputRef}
         type="text"
@@ -347,9 +339,10 @@ export default function Home() {
         isRunning={gameState === "running"}
         soundEnabled={soundEnabled}
         onSoundToggle={() => setSoundEnabled((prev) => !prev)}
+        soundProfile={soundProfile}
+        onSoundProfileChange={setSoundProfile}
       />
 
-      {/* Main content */}
       <main className="flex-1 flex flex-col items-center justify-center px-8">
         {gameState === "finished" ? (
           <Results {...getResults()} onRestart={restartGame} />
@@ -369,7 +362,6 @@ export default function Home() {
         )}
       </main>
 
-      {/* Keyboard - centered at bottom with breathing room */}
       {gameState !== "finished" && (
         <footer className="pb-6 pt-4 flex justify-center overflow-x-auto">
           <Keyboard pressedKeys={pressedKeys} />

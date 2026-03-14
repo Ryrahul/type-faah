@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import type { SoundProfile } from "../lib/sounds";
 
 const themes = [
   { id: "default", color: "#a7c4a0", label: "Sage" },
@@ -13,6 +14,11 @@ const themes = [
 
 const timerOptions = [15, 30, 60, 120];
 
+const soundProfiles: { id: SoundProfile; label: string; desc: string }[] = [
+  { id: "lubed", label: "Lubed", desc: "Soft, buttery linears" },
+  { id: "blue", label: "Blue", desc: "Clicky, tactile switches" },
+];
+
 interface HeaderProps {
   currentTheme: string;
   onThemeChange: (theme: string) => void;
@@ -21,6 +27,8 @@ interface HeaderProps {
   isRunning: boolean;
   soundEnabled: boolean;
   onSoundToggle: () => void;
+  soundProfile: SoundProfile;
+  onSoundProfileChange: (profile: SoundProfile) => void;
 }
 
 export default function Header({
@@ -31,6 +39,8 @@ export default function Header({
   isRunning,
   soundEnabled,
   onSoundToggle,
+  soundProfile,
+  onSoundProfileChange,
 }: HeaderProps) {
   return (
     <header className="flex items-center justify-between px-8 py-5 max-w-[1400px] mx-auto w-full">
@@ -95,7 +105,9 @@ export default function Header({
               key={time}
               onClick={() => !isRunning && onTimerChange(time)}
               className={`px-3.5 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-200 ${
-                isRunning ? "cursor-default opacity-60" : "cursor-pointer hover:opacity-100"
+                isRunning
+                  ? "cursor-default opacity-60"
+                  : "cursor-pointer hover:opacity-100"
               }`}
               style={{
                 backgroundColor:
@@ -116,7 +128,9 @@ export default function Header({
           <button
             onClick={() => !isRunning && onTimerChange(0)}
             className={`px-3.5 py-1.5 rounded-lg text-[14px] font-medium transition-all duration-200 ${
-              isRunning ? "cursor-default opacity-60" : "cursor-pointer hover:opacity-100"
+              isRunning
+                ? "cursor-default opacity-60"
+                : "cursor-pointer hover:opacity-100"
             }`}
             style={{
               backgroundColor:
@@ -133,8 +147,37 @@ export default function Header({
         </div>
       </div>
 
-      {/* Right: Sound toggle */}
-      <div className="w-[120px] flex justify-end">
+      {/* Right: Sound profile + Sound toggle */}
+      <div className="flex items-center gap-3">
+        {/* Sound profile selector */}
+        <div
+          className="flex items-center rounded-lg px-1 py-1 gap-[2px]"
+          style={{ backgroundColor: "var(--bg-secondary)" }}
+        >
+          {soundProfiles.map((p) => (
+            <button
+              key={p.id}
+              onClick={() => onSoundProfileChange(p.id)}
+              className="px-3 py-1 rounded-md text-[12px] font-medium transition-all duration-200 cursor-pointer"
+              style={{
+                backgroundColor:
+                  soundProfile === p.id ? "var(--bg-card)" : "transparent",
+                color:
+                  soundProfile === p.id ? "var(--accent)" : "var(--text-dim)",
+                boxShadow:
+                  soundProfile === p.id
+                    ? "0 2px 6px rgba(0,0,0,0.2)"
+                    : "none",
+              }}
+              title={p.desc}
+              aria-label={p.desc}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Sound on/off toggle */}
         <button
           onClick={onSoundToggle}
           className="p-2 rounded-lg transition-all duration-200 hover:scale-110"
@@ -144,8 +187,8 @@ export default function Header({
         >
           {soundEnabled ? (
             <svg
-              width="20"
-              height="20"
+              width="18"
+              height="18"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -159,8 +202,8 @@ export default function Header({
             </svg>
           ) : (
             <svg
-              width="20"
-              height="20"
+              width="18"
+              height="18"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
