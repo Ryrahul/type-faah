@@ -94,19 +94,22 @@ export default function TypingArea({
 }: TypingAreaProps) {
   const activeWordRef = useRef<HTMLSpanElement>(null);
   const wordsWrapperRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLDivElement>(null);
   const scrollOffsetRef = useRef(0);
   const rafRef = useRef<number>(0);
 
   // Position the floating cursor via direct DOM measurement
+  // Measures relative to the CONTAINER (overflow div), not the wrapper
+  // This way translateY on wrapper doesn't offset the cursor
   const updateCursor = useCallback(() => {
-    if (!cursorRef.current || !activeWordRef.current || !wordsWrapperRef.current) return;
+    if (!cursorRef.current || !activeWordRef.current || !containerRef.current) return;
 
     const cursor = cursorRef.current;
     const wordEl = activeWordRef.current;
-    const wrapperEl = wordsWrapperRef.current;
+    const containerEl = containerRef.current;
+    const containerRect = containerEl.getBoundingClientRect();
 
-    // Find the character span at currentCharIndex
     const charSpans = wordEl.querySelectorAll<HTMLSpanElement>("[data-char-idx]");
     const totalChars = charSpans.length;
 
@@ -115,21 +118,17 @@ export default function TypingArea({
     let height: number;
 
     if (currentCharIndex < totalChars) {
-      // Cursor is before a character
       const charEl = charSpans[currentCharIndex];
       const charRect = charEl.getBoundingClientRect();
-      const wrapperRect = wrapperEl.getBoundingClientRect();
-      left = charRect.left - wrapperRect.left - 1;
-      top = charRect.top - wrapperRect.top + 4;
+      left = charRect.left - containerRect.left - 1;
+      top = charRect.top - containerRect.top + 4;
       height = charRect.height - 8;
     } else {
-      // Cursor is at end of word (past all characters or in extra chars)
       const lastChild = wordEl.lastElementChild as HTMLElement;
       if (lastChild) {
         const rect = lastChild.getBoundingClientRect();
-        const wrapperRect = wrapperEl.getBoundingClientRect();
-        left = rect.right - wrapperRect.left + 1;
-        top = rect.top - wrapperRect.top + 4;
+        left = rect.right - containerRect.left + 1;
+        top = rect.top - containerRect.top + 4;
         height = rect.height - 8;
       } else {
         return;
@@ -229,6 +228,7 @@ export default function TypingArea({
 
       {/* Typing area */}
       <div
+        ref={containerRef}
         onClick={onFocus}
         className="relative overflow-hidden cursor-text select-none"
         style={{
@@ -244,7 +244,7 @@ export default function TypingArea({
           style={{
             backgroundColor: "var(--cursor)",
             willChange: "transform, opacity",
-            transition: "transform 0.08s cubic-bezier(0.18, 0.89, 0.32, 1.15), opacity 0.15s ease",
+            transition: "transform 0.1s cubic-bezier(0.22, 0.68, 0, 1), opacity 0.15s ease",
           }}
         />
 
