@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useMemo, useState } from "react";
+import React, { useEffect, useRef, useMemo, useCallback } from "react";
 
 interface TypingAreaProps {
   words: string[];
@@ -29,31 +29,43 @@ export default function TypingArea({
 }: TypingAreaProps) {
   const activeWordRef = useRef<HTMLSpanElement>(null);
   const wordsWrapperRef = useRef<HTMLDivElement>(null);
-  const [scrollOffset, setScrollOffset] = useState(0);
-  const lineHeightRef = useRef(0);
+  const scrollOffsetRef = useRef(0);
+  const rafRef = useRef<number>(0);
 
-  // Track the active word's vertical position and slide up when it goes past line 1
-  useEffect(() => {
+  // Smooth scroll: directly mutate the DOM transform via rAF
+  // instead of going through React state (avoids re-render on scroll)
+  const updateScroll = useCallback(() => {
     if (!activeWordRef.current || !wordsWrapperRef.current) return;
 
     const wordEl = activeWordRef.current;
     const wrapperEl = wordsWrapperRef.current;
-
-    // Get the top of the word relative to the wrapper
     const wordTop = wordEl.offsetTop - wrapperEl.offsetTop;
+    const lineH = wordEl.offsetHeight + 12;
 
-    // Measure one line height from the word element
-    const lineH = wordEl.offsetHeight + 12; // 12px = gap-y
-    if (lineH > 0) lineHeightRef.current = lineH;
+    if (lineH <= 0) return;
 
-    // We want the active word to stay on the first visible line.
-    // If wordTop is greater than one line height, scroll up.
     const targetScroll = Math.max(0, Math.floor(wordTop / lineH) * lineH);
 
-    if (targetScroll !== scrollOffset) {
-      setScrollOffset(targetScroll);
+    if (targetScroll !== scrollOffsetRef.current) {
+      scrollOffsetRef.current = targetScroll;
+      // Direct DOM mutation - no React re-render, pure GPU animation
+      wrapperEl.style.transform = `translateY(-${targetScroll}px)`;
     }
-  }, [currentWordIndex, scrollOffset]);
+  }, []);
+
+  // Run scroll check whenever word changes
+  useEffect(() => {
+    cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(updateScroll);
+  }, [currentWordIndex, updateScroll]);
+
+  // Reset scroll on word list change (restart)
+  useEffect(() => {
+    if (wordsWrapperRef.current) {
+      scrollOffsetRef.current = 0;
+      wordsWrapperRef.current.style.transform = "translateY(0px)";
+    }
+  }, [words]);
 
   const visibleRange = useMemo(() => {
     const start = Math.max(0, currentWordIndex - 30);
@@ -105,12 +117,12 @@ export default function TypingArea({
         </div>
       </div>
 
-      {/* Typing area - uses translateY for smooth line scrolling */}
+      {/* Typing area */}
       <div
         onClick={onFocus}
         className="relative overflow-hidden cursor-text select-none"
         style={{
-          height: "180px",
+          height: "190px",
           maskImage:
             "linear-gradient(to bottom, black 0%, black 55%, transparent 100%)",
           WebkitMaskImage:
@@ -125,8 +137,8 @@ export default function TypingArea({
             fontFamily: "var(--font-geist-mono)",
             letterSpacing: "0.01em",
             lineHeight: "1.75",
-            transform: `translateY(-${scrollOffset}px)`,
-            transition: "transform 0.25s ease-out",
+            willChange: "transform",
+            transition: "transform 0.35s cubic-bezier(0.25, 0.1, 0.25, 1)",
           }}
         >
           {words.slice(visibleRange.start, visibleRange.end).map((word, idx) => {
@@ -178,7 +190,6 @@ export default function TypingArea({
                           textDecorationColor: "var(--text-error)",
                           textUnderlineOffset: "6px",
                           textDecorationThickness: "2.5px",
-                          transition: "color 0.12s ease",
                         }}
                       >
                         {char}
