@@ -124,12 +124,48 @@ export const curseWords = [
   "ggez", "diffed", "gapped", "washed", "hardstuck",
 ];
 
+// Hindi + Punjabi words get 3x weight in curse mode
+const hindiPunjabi = [
+  // Core Hindi gaalis (high frequency)
+  "chutiya", "madarchod", "behenchod", "bhosdike", "gaandu",
+  "harami", "kameena", "saala", "kutte", "gadhe",
+  "bewakoof", "pagal", "chapri", "jhandu", "tatti",
+  "gandu", "chodu", "lavde", "randi", "haramkhor",
+  "nalayak", "bakchod", "kamina", "badtameez", "laudu",
+  "jhatu", "lodu", "bhadwa", "tharki", "chutiyapa",
+  "jhaant", "chutad", "maderchod", "kutiya", "suar",
+  "haraami", "charsi", "langoor", "bandar", "bhikari",
+  "keeda", "dalal", "bhosdiwale", "chutiyagiri", "randibaaz",
+  "haraamzaade", "lauda", "lund", "chut", "bhosda",
+  "gaand", "jhaatu", "chinal", "badmaash", "gundaa",
+  "bevda", "sharaabi", "bakwas", "wahiyat", "ghatiya",
+  "nikamma", "fattu", "dhakkan", "panauti", "gandagi",
+  // Core Punjabi gaalis (high frequency)
+  "penchod", "bhainchod", "terimaaki", "maachod", "laudeya",
+  "gashti", "kanjri", "khotey", "tattey", "kanjar",
+  "fuddi", "kuttiya", "gadheya", "sooar", "painchoda",
+  "maadarchoda", "bhaindiputtara", "tuttpaineya", "ghanta",
+  "kutti", "kuttey", "haraamda", "gandia", "ghaseeta",
+  "chootad", "ulludepatthe", "vella", "nikhattu", "chhapri",
+];
+
 export function generateWords(count: number, mode: WordMode = "normal"): string[] {
-  const source = mode === "curse" ? curseWords : commonWords;
+  if (mode === "normal") {
+    const words: string[] = [];
+    for (let i = 0; i < count; i++) {
+      words.push(commonWords[Math.floor(Math.random() * commonWords.length)]);
+    }
+    return words;
+  }
+
+  // Curse mode: 65% Hindi/Punjabi, 35% full pool (English/Nepali/slang)
   const words: string[] = [];
   for (let i = 0; i < count; i++) {
-    const randomIndex = Math.floor(Math.random() * source.length);
-    words.push(source[randomIndex]);
+    if (Math.random() < 0.65) {
+      words.push(hindiPunjabi[Math.floor(Math.random() * hindiPunjabi.length)]);
+    } else {
+      words.push(curseWords[Math.floor(Math.random() * curseWords.length)]);
+    }
   }
   return words;
 }
