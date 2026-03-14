@@ -162,130 +162,149 @@ function playLubedSpace(ctx: AudioContext) {
 }
 
 // ─────────────────────────────────────────────────────
-// CHERRY MX BLUE - loud, clicky, sharp tactile snap
+// STOCK CHERRY MX BLUE
 //
-// Blues have two distinct sound events:
-// 1. The "click" - the click jacket snapping past the bump
-//    (sharp, high-pitched, metallic)
-// 2. The "bottom out" - stem hitting the bottom housing
-//    (louder thud than linears, more case ping)
-// Plus a subtle "spring ping" resonance on release
+// The signature Cherry Blue sound comes from:
+// 1. Click jacket: a sharp, bright, crisp "tick" - almost
+//    like snapping a thin plastic piece. Very fast (~5ms),
+//    concentrated around 2-5kHz.
+// 2. Bottom-out: a fuller thud a few ms after the click,
+//    as the stem hits the housing floor.
+// 3. Housing resonance: the plastic housing rings briefly.
+// 4. Spring crunch: very subtle metallic texture.
+//
+// The click is THE defining sound - it needs to be crisp,
+// bright, and have that distinctive "tick" character.
 // ─────────────────────────────────────────────────────
+
+// Pre-generate a click impulse buffer for sharper transient
+let clickBuffer: AudioBuffer | null = null;
+
+function getClickBuffer(ctx: AudioContext): AudioBuffer {
+  if (!clickBuffer || clickBuffer.sampleRate !== ctx.sampleRate) {
+    // Very short impulse (~3ms) with shaped envelope
+    const len = Math.floor(ctx.sampleRate * 0.004);
+    clickBuffer = ctx.createBuffer(1, len, ctx.sampleRate);
+    const data = clickBuffer.getChannelData(0);
+    for (let i = 0; i < len; i++) {
+      const t = i / len;
+      // Sharp attack, fast decay envelope
+      const env = t < 0.1 ? t / 0.1 : Math.exp(-12 * (t - 0.1));
+      // Mix of noise + high-freq tone for metallic character
+      data[i] = env * (
+        (Math.random() * 2 - 1) * 0.6 +
+        Math.sin(i * 2 * Math.PI * 5500 / ctx.sampleRate) * 0.4
+      );
+    }
+  }
+  return clickBuffer;
+}
 
 function playBlueKey(ctx: AudioContext, isCorrect: boolean) {
   const now = ctx.currentTime;
-  const pitch = 0.94 + Math.random() * 0.12;
-  const vol = 0.9 + Math.random() * 0.1;
+  const pitch = 0.95 + Math.random() * 0.1;
+  const vol = 0.92 + Math.random() * 0.08;
 
-  // === Layer 1: THE CLICK - sharp metallic snap ===
-  // This is what makes blues "blue" - a sharp high-mid crack
-  const clickOsc = ctx.createOscillator();
-  clickOsc.type = "square";
-  clickOsc.frequency.setValueAtTime(4200 * pitch, now);
-  clickOsc.frequency.exponentialRampToValueAtTime(1800, now + 0.008);
+  // === THE CLICK (the signature Blue sound) ===
+  // Short, bright, crisp impulse through a peaky bandpass
+  const clickSrc = ctx.createBufferSource();
+  clickSrc.buffer = getClickBuffer(ctx);
+  clickSrc.playbackRate.value = pitch;
 
-  const clickLP = ctx.createBiquadFilter();
-  clickLP.type = "lowpass";
-  clickLP.frequency.setValueAtTime(6000, now);
-  clickLP.frequency.exponentialRampToValueAtTime(2000, now + 0.015);
+  const clickHP = ctx.createBiquadFilter();
+  clickHP.type = "highpass";
+  clickHP.frequency.setValueAtTime(1800, now);
+
+  const clickPeak = ctx.createBiquadFilter();
+  clickPeak.type = "peaking";
+  clickPeak.frequency.setValueAtTime(4000 * pitch, now);
+  clickPeak.gain.setValueAtTime(8, now);
+  clickPeak.Q.setValueAtTime(2, now);
 
   const clickGain = ctx.createGain();
-  clickGain.gain.setValueAtTime(0.07 * vol, now);
-  clickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
+  clickGain.gain.setValueAtTime(0.35 * vol, now);
 
-  clickOsc.connect(clickLP);
-  clickLP.connect(clickGain);
+  clickSrc.connect(clickHP);
+  clickHP.connect(clickPeak);
+  clickPeak.connect(clickGain);
   clickGain.connect(ctx.destination);
-  clickOsc.start(now);
-  clickOsc.stop(now + 0.025);
+  clickSrc.start(now);
 
-  // === Layer 2: Click noise burst (the jacket snap) ===
-  const snapSource = ctx.createBufferSource();
-  snapSource.buffer = getNoiseBuffer(ctx);
-
-  const snapBP = ctx.createBiquadFilter();
-  snapBP.type = "bandpass";
-  snapBP.frequency.setValueAtTime(3500 * pitch, now);
-  snapBP.Q.setValueAtTime(1.5, now);
-
-  const snapGain = ctx.createGain();
-  snapGain.gain.setValueAtTime(0.1 * vol, now);
-  snapGain.gain.exponentialRampToValueAtTime(0.001, now + 0.018);
-
-  snapSource.connect(snapBP);
-  snapBP.connect(snapGain);
-  snapGain.connect(ctx.destination);
-  snapSource.start(now);
-  snapSource.stop(now + 0.02);
-
-  // === Layer 3: Bottom-out thud ===
-  // Delayed slightly after the click (stem travels past the bump)
-  const thudDelay = 0.012;
-  const thudSource = ctx.createBufferSource();
-  thudSource.buffer = getNoiseBuffer(ctx);
+  // === BOTTOM-OUT THUD (delayed ~8ms after click) ===
+  const thudDelay = 0.008;
+  const thudSrc = ctx.createBufferSource();
+  thudSrc.buffer = getNoiseBuffer(ctx);
 
   const thudLP = ctx.createBiquadFilter();
   thudLP.type = "lowpass";
-  thudLP.frequency.setValueAtTime(900 * pitch, now + thudDelay);
-  thudLP.Q.setValueAtTime(1, now + thudDelay);
-  thudLP.frequency.exponentialRampToValueAtTime(300, now + thudDelay + 0.04);
+  thudLP.frequency.setValueAtTime(1200 * pitch, now + thudDelay);
+  thudLP.Q.setValueAtTime(0.7, now);
+  thudLP.frequency.exponentialRampToValueAtTime(350, now + thudDelay + 0.035);
 
   const thudGain = ctx.createGain();
   thudGain.gain.setValueAtTime(0, now);
-  thudGain.gain.linearRampToValueAtTime(0.1 * vol, now + thudDelay);
-  thudGain.gain.exponentialRampToValueAtTime(0.001, now + thudDelay + 0.05);
+  thudGain.gain.linearRampToValueAtTime(0.13 * vol, now + thudDelay);
+  thudGain.gain.exponentialRampToValueAtTime(0.001, now + thudDelay + 0.045);
 
-  thudSource.connect(thudLP);
+  thudSrc.connect(thudLP);
   thudLP.connect(thudGain);
   thudGain.connect(ctx.destination);
-  thudSource.start(now);
-  thudSource.stop(now + thudDelay + 0.06);
+  thudSrc.start(now);
+  thudSrc.stop(now + thudDelay + 0.05);
 
-  // === Layer 4: Spring ping resonance ===
-  const pingOsc = ctx.createOscillator();
-  pingOsc.type = "sine";
-  pingOsc.frequency.setValueAtTime(2800 * pitch, now);
-  pingOsc.frequency.exponentialRampToValueAtTime(2200, now + 0.06);
+  // === HOUSING RESONANCE (plastic ring) ===
+  const resSrc = ctx.createBufferSource();
+  resSrc.buffer = getNoiseBuffer(ctx);
 
-  const pingGain = ctx.createGain();
-  pingGain.gain.setValueAtTime(0.012 * vol, now);
-  pingGain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+  const resBP = ctx.createBiquadFilter();
+  resBP.type = "bandpass";
+  resBP.frequency.setValueAtTime(2200 * pitch, now);
+  resBP.Q.setValueAtTime(5, now);
 
-  pingOsc.connect(pingGain);
-  pingGain.connect(ctx.destination);
-  pingOsc.start(now);
-  pingOsc.stop(now + 0.065);
+  const resGain = ctx.createGain();
+  resGain.gain.setValueAtTime(0.04 * vol, now);
+  resGain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
 
-  // === Layer 5: Case ping / resonance ===
-  const caseSource = ctx.createBufferSource();
-  caseSource.buffer = getNoiseBuffer(ctx);
+  resSrc.connect(resBP);
+  resBP.connect(resGain);
+  resGain.connect(ctx.destination);
+  resSrc.start(now);
+  resSrc.stop(now + 0.055);
+
+  // === CASE THUMP (low end body) ===
+  const caseSrc = ctx.createBufferSource();
+  caseSrc.buffer = getNoiseBuffer(ctx);
 
   const caseLP = ctx.createBiquadFilter();
   caseLP.type = "lowpass";
-  caseLP.frequency.setValueAtTime(250 * pitch, now);
-  caseLP.Q.setValueAtTime(2, now);
+  caseLP.frequency.setValueAtTime(300, now);
+  caseLP.Q.setValueAtTime(1.5, now);
 
   const caseGain = ctx.createGain();
-  caseGain.gain.setValueAtTime(0.06 * vol, now);
-  caseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+  caseGain.gain.setValueAtTime(0.08 * vol, now + 0.005);
+  caseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
 
-  caseSource.connect(caseLP);
+  caseSrc.connect(caseLP);
   caseLP.connect(caseGain);
   caseGain.connect(ctx.destination);
-  caseSource.start(now);
-  caseSource.stop(now + 0.07);
+  caseSrc.start(now);
+  caseSrc.stop(now + 0.065);
 
   if (!isCorrect) {
-    const errOsc = ctx.createOscillator();
+    const errSrc = ctx.createBufferSource();
+    errSrc.buffer = getNoiseBuffer(ctx);
+    const errBP = ctx.createBiquadFilter();
+    errBP.type = "bandpass";
+    errBP.frequency.setValueAtTime(300, now);
+    errBP.Q.setValueAtTime(2, now);
     const errGain = ctx.createGain();
-    errOsc.type = "sine";
-    errOsc.frequency.setValueAtTime(250, now);
-    errGain.gain.setValueAtTime(0.04, now);
-    errGain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
-    errOsc.connect(errGain);
+    errGain.gain.setValueAtTime(0.05, now);
+    errGain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+    errSrc.connect(errBP);
+    errBP.connect(errGain);
     errGain.connect(ctx.destination);
-    errOsc.start(now);
-    errOsc.stop(now + 0.1);
+    errSrc.start(now);
+    errSrc.stop(now + 0.085);
   }
 }
 
@@ -293,73 +312,80 @@ function playBlueSpace(ctx: AudioContext) {
   const now = ctx.currentTime;
   const vol = 0.9 + Math.random() * 0.1;
 
-  // Louder click for spacebar
-  const clickOsc = ctx.createOscillator();
-  clickOsc.type = "square";
-  clickOsc.frequency.setValueAtTime(3000, now);
-  clickOsc.frequency.exponentialRampToValueAtTime(1200, now + 0.01);
-  const clickLP = ctx.createBiquadFilter();
-  clickLP.type = "lowpass";
-  clickLP.frequency.setValueAtTime(5000, now);
-  clickLP.frequency.exponentialRampToValueAtTime(1500, now + 0.02);
+  // Click (slightly lower pitch for bigger key)
+  const clickSrc = ctx.createBufferSource();
+  clickSrc.buffer = getClickBuffer(ctx);
+  clickSrc.playbackRate.value = 0.85;
+
+  const clickHP = ctx.createBiquadFilter();
+  clickHP.type = "highpass";
+  clickHP.frequency.setValueAtTime(1500, now);
+
+  const clickPeak = ctx.createBiquadFilter();
+  clickPeak.type = "peaking";
+  clickPeak.frequency.setValueAtTime(3200, now);
+  clickPeak.gain.setValueAtTime(6, now);
+  clickPeak.Q.setValueAtTime(2, now);
+
   const clickGain = ctx.createGain();
-  clickGain.gain.setValueAtTime(0.065 * vol, now);
-  clickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
-  clickOsc.connect(clickLP);
-  clickLP.connect(clickGain);
+  clickGain.gain.setValueAtTime(0.3 * vol, now);
+
+  clickSrc.connect(clickHP);
+  clickHP.connect(clickPeak);
+  clickPeak.connect(clickGain);
   clickGain.connect(ctx.destination);
-  clickOsc.start(now);
-  clickOsc.stop(now + 0.03);
+  clickSrc.start(now);
 
-  // Snap
-  const snapSource = ctx.createBufferSource();
-  snapSource.buffer = getNoiseBuffer(ctx);
-  const snapBP = ctx.createBiquadFilter();
-  snapBP.type = "bandpass";
-  snapBP.frequency.setValueAtTime(2500, now);
-  snapBP.Q.setValueAtTime(1, now);
-  const snapGain = ctx.createGain();
-  snapGain.gain.setValueAtTime(0.09 * vol, now);
-  snapGain.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
-  snapSource.connect(snapBP);
-  snapBP.connect(snapGain);
-  snapGain.connect(ctx.destination);
-  snapSource.start(now);
-  snapSource.stop(now + 0.025);
-
-  // Deep thud + stab rattle
-  const thudSource = ctx.createBufferSource();
-  thudSource.buffer = getNoiseBuffer(ctx);
+  // Deeper thud
+  const thudSrc = ctx.createBufferSource();
+  thudSrc.buffer = getNoiseBuffer(ctx);
   const thudLP = ctx.createBiquadFilter();
   thudLP.type = "lowpass";
-  thudLP.frequency.setValueAtTime(600, now);
-  thudLP.Q.setValueAtTime(1.5, now);
-  thudLP.frequency.exponentialRampToValueAtTime(150, now + 0.06);
+  thudLP.frequency.setValueAtTime(800, now + 0.01);
+  thudLP.Q.setValueAtTime(1, now);
+  thudLP.frequency.exponentialRampToValueAtTime(200, now + 0.06);
   const thudGain = ctx.createGain();
-  thudGain.gain.setValueAtTime(0.13 * vol, now);
-  thudGain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
-  thudSource.connect(thudLP);
+  thudGain.gain.setValueAtTime(0, now);
+  thudGain.gain.linearRampToValueAtTime(0.15 * vol, now + 0.01);
+  thudGain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+  thudSrc.connect(thudLP);
   thudLP.connect(thudGain);
   thudGain.connect(ctx.destination);
-  thudSource.start(now);
-  thudSource.stop(now + 0.09);
+  thudSrc.start(now);
+  thudSrc.stop(now + 0.075);
 
-  // Stabilizer wire rattle (unlubed stabs on blues)
-  const rattleSource = ctx.createBufferSource();
-  rattleSource.buffer = getNoiseBuffer(ctx);
+  // Low case thump
+  const caseSrc = ctx.createBufferSource();
+  caseSrc.buffer = getNoiseBuffer(ctx);
+  const caseLP = ctx.createBiquadFilter();
+  caseLP.type = "lowpass";
+  caseLP.frequency.setValueAtTime(200, now);
+  caseLP.Q.setValueAtTime(2, now);
+  const caseGain = ctx.createGain();
+  caseGain.gain.setValueAtTime(0.1 * vol, now + 0.008);
+  caseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+  caseSrc.connect(caseLP);
+  caseLP.connect(caseGain);
+  caseGain.connect(ctx.destination);
+  caseSrc.start(now);
+  caseSrc.stop(now + 0.085);
+
+  // Stab rattle
+  const rattleSrc = ctx.createBufferSource();
+  rattleSrc.buffer = getNoiseBuffer(ctx);
   const rattleBP = ctx.createBiquadFilter();
   rattleBP.type = "bandpass";
-  rattleBP.frequency.setValueAtTime(1800, now + 0.015);
-  rattleBP.Q.setValueAtTime(3, now);
+  rattleBP.frequency.setValueAtTime(2000, now + 0.012);
+  rattleBP.Q.setValueAtTime(4, now);
   const rattleGain = ctx.createGain();
   rattleGain.gain.setValueAtTime(0, now);
-  rattleGain.gain.linearRampToValueAtTime(0.04 * vol, now + 0.015);
-  rattleGain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
-  rattleSource.connect(rattleBP);
+  rattleGain.gain.linearRampToValueAtTime(0.035 * vol, now + 0.012);
+  rattleGain.gain.exponentialRampToValueAtTime(0.001, now + 0.055);
+  rattleSrc.connect(rattleBP);
   rattleBP.connect(rattleGain);
   rattleGain.connect(ctx.destination);
-  rattleSource.start(now);
-  rattleSource.stop(now + 0.065);
+  rattleSrc.start(now);
+  rattleSrc.stop(now + 0.06);
 }
 
 // ─────────────────────────────────────────────

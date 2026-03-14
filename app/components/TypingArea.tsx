@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useMemo } from "react";
+import React, { useEffect, useRef, useMemo, useState } from "react";
 
 interface TypingAreaProps {
   words: string[];
@@ -27,26 +27,33 @@ export default function TypingArea({
   isRunning,
   liveWpm,
 }: TypingAreaProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
   const activeWordRef = useRef<HTMLSpanElement>(null);
+  const wordsWrapperRef = useRef<HTMLDivElement>(null);
+  const [scrollOffset, setScrollOffset] = useState(0);
+  const lineHeightRef = useRef(0);
 
-  // Smooth scroll to keep active word visible
+  // Track the active word's vertical position and slide up when it goes past line 1
   useEffect(() => {
-    if (activeWordRef.current && containerRef.current) {
-      const wordEl = activeWordRef.current;
-      const containerEl = containerRef.current;
-      const wordTop = wordEl.offsetTop;
-      const containerScroll = containerEl.scrollTop;
-      const containerHeight = containerEl.clientHeight;
+    if (!activeWordRef.current || !wordsWrapperRef.current) return;
 
-      if (wordTop > containerScroll + containerHeight - 60) {
-        containerEl.scrollTo({
-          top: wordTop - 30,
-          behavior: "smooth",
-        });
-      }
+    const wordEl = activeWordRef.current;
+    const wrapperEl = wordsWrapperRef.current;
+
+    // Get the top of the word relative to the wrapper
+    const wordTop = wordEl.offsetTop - wrapperEl.offsetTop;
+
+    // Measure one line height from the word element
+    const lineH = wordEl.offsetHeight + 12; // 12px = gap-y
+    if (lineH > 0) lineHeightRef.current = lineH;
+
+    // We want the active word to stay on the first visible line.
+    // If wordTop is greater than one line height, scroll up.
+    const targetScroll = Math.max(0, Math.floor(wordTop / lineH) * lineH);
+
+    if (targetScroll !== scrollOffset) {
+      setScrollOffset(targetScroll);
     }
-  }, [currentWordIndex]);
+  }, [currentWordIndex, scrollOffset]);
 
   const visibleRange = useMemo(() => {
     const start = Math.max(0, currentWordIndex - 30);
@@ -71,7 +78,6 @@ export default function TypingArea({
             {timeLeft !== null ? timeLeft : timerDuration}
           </div>
         )}
-        {/* Always reserve space for WPM to avoid layout shift */}
         <div
           className="flex items-baseline gap-1.5 min-w-[80px]"
           style={{
@@ -99,25 +105,28 @@ export default function TypingArea({
         </div>
       </div>
 
-      {/* Typing area */}
+      {/* Typing area - uses translateY for smooth line scrolling */}
       <div
-        ref={containerRef}
         onClick={onFocus}
-        className="relative h-[180px] overflow-hidden cursor-text select-none"
+        className="relative overflow-hidden cursor-text select-none"
         style={{
+          height: "180px",
           maskImage:
-            "linear-gradient(to bottom, black 0%, black 60%, transparent 100%)",
+            "linear-gradient(to bottom, black 0%, black 55%, transparent 100%)",
           WebkitMaskImage:
-            "linear-gradient(to bottom, black 0%, black 60%, transparent 100%)",
+            "linear-gradient(to bottom, black 0%, black 55%, transparent 100%)",
         }}
       >
         <div
+          ref={wordsWrapperRef}
           className="flex flex-wrap gap-x-[16px] gap-y-[12px]"
           style={{
             fontSize: "32px",
             fontFamily: "var(--font-geist-mono)",
             letterSpacing: "0.01em",
             lineHeight: "1.75",
+            transform: `translateY(-${scrollOffset}px)`,
+            transition: "transform 0.25s ease-out",
           }}
         >
           {words.slice(visibleRange.start, visibleRange.end).map((word, idx) => {
@@ -177,7 +186,6 @@ export default function TypingArea({
                     </span>
                   );
                 })}
-                {/* Extra typed characters beyond word length */}
                 {wordTyped.slice(word.length).map((typed, extraIdx) => (
                   <span
                     key={`extra-${extraIdx}`}
@@ -193,7 +201,6 @@ export default function TypingArea({
                     {typed.char}
                   </span>
                 ))}
-                {/* Cursor at end of current word */}
                 {isFocused &&
                   isCurrentWord &&
                   currentCharIndex >= word.length &&
@@ -212,7 +219,7 @@ export default function TypingArea({
         </div>
       </div>
 
-      {/* Focus overlay - clean, minimal */}
+      {/* Focus overlay */}
       {!isFocused && (
         <div
           className="absolute inset-0 flex items-center justify-center cursor-pointer"
@@ -224,9 +231,7 @@ export default function TypingArea({
         >
           <div
             className="flex items-center gap-3 px-8 py-4 rounded-2xl text-[14px] tracking-wider focus-pulse"
-            style={{
-              color: "var(--text-dim)",
-            }}
+            style={{ color: "var(--text-dim)" }}
           >
             <svg
               width="16"
