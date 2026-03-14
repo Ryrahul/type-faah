@@ -1,4 +1,4 @@
-export type WordMode = "normal" | "curse";
+export type WordMode = "normal" | "mixed" | "hindi" | "punjabi" | "nepali" | "english";
 
 export const commonWords = [
   "the", "be", "to", "of", "and", "a", "in", "that", "have", "I",
@@ -50,8 +50,110 @@ export const commonWords = [
   "beautiful", "program", "minute", "finger", "natural", "hundred"
 ];
 
-export const curseWords = [
-  // English profanity
+// ═══════════════════════════════════════
+// HINDI GAALIS
+// ═══════════════════════════════════════
+const hindiWords = [
+  "chutiya", "madarchod", "behenchod", "bhosdike", "gaandu",
+  "harami", "kameena", "saala", "kutte", "gadhe",
+  "bewakoof", "pagal", "chapri", "jhandu", "tatti",
+  "gandu", "chodu", "lavde", "randi", "haramkhor",
+  "nalayak", "bakchod", "kamina", "badtameez", "laudu",
+  "jhatu", "lodu", "bhadwa", "tharki", "chutiyapa",
+  "jhaant", "chutad", "maderchod", "kutiya", "suar",
+  "haraami", "charsi", "langoor", "bandar", "bhikari",
+  "keeda", "dalal", "bhosdiwale", "chutiyagiri", "randibaaz",
+  "haraamzaade", "lauda", "lund", "chut", "bhosda",
+  "gaand", "jhaatu", "chinal", "badmaash", "gundaa",
+  "bevda", "sharaabi", "bakwas", "wahiyat", "ghatiya",
+  "nikamma", "fattu", "dhakkan", "panauti", "gandagi",
+  "gandmasti", "besharmi", "haramipana", "nalayaki", "lafanga",
+  "raand", "chakka", "hijda", "hijada", "kinnar",
+  "meetha", "randikhana", "chinalbaaz", "laudebaaz",
+  "gaandphat", "chhakka", "chutmarike", "raandbaaz",
+  "lavdya", "jhantke", "gaandfat", "chutadbaaz",
+  "laudiya", "bhosadpappu", "tattisoch",
+  "ullu", "gadha", "bhosdi", "chutiyon",
+  "tatti", "lodu", "panauti", "duffer",
+  "chamcha", "gulel", "dhakkan", "phattu",
+  "behen", "saali", "janwar", "harkati",
+  "langda", "taklu", "motu", "suarki",
+  "tuchha", "gira", "kachra", "makoda",
+  "chuhaa", "gadhedh", "dhonghi", "pakhandhi",
+  "bikau", "galiz", "kamini", "saand",
+  "bhains", "bakri", "chutmaari", "gaandphati",
+  "phuddu", "phuddi", "nikammi", "bigda",
+  "awaara", "loafer", "lafangaa", "gundaa",
+  "nashebaaz", "nashebaazi", "tapori", "chirkut",
+  "lukkha", "bekaar", "zaleel", "neech",
+  "gandphat", "gandagi", "tattiyaan",
+  "gaandmein", "bhenchod", "lodebaaz",
+];
+
+// ═══════════════════════════════════════
+// PUNJABI GAALIS
+// ═══════════════════════════════════════
+const punjabiWords = [
+  "penchod", "bhainchod", "terimaaki", "maachod", "laudeya",
+  "gashti", "kanjri", "khotey", "tattey", "kanjar",
+  "fuddi", "fuddiyan", "kuttiya", "gadheya", "sooar",
+  "painchoda", "maadarchoda", "bhaindiputtara", "tuttpaineya",
+  "ghanta", "kutti", "kuttey", "haraamda", "gandia",
+  "ghaseeta", "chootad", "ulludepatthe", "vella", "nikhattu",
+  "chhapri", "haramdi", "chootni", "phuddu",
+  "paaji", "badmaashi", "lulli", "khota", "kutteyda",
+  "bhaindiyan", "gandasa", "tattiyaan", "buddhu",
+  "lassanpatti", "guddi", "pendu", "jatt",
+  "kudiyan", "chootiya", "bhainsdiputtara",
+  "gaddhekitauli", "mundey", "bharvaad",
+  "giddha", "chhittar", "tuttiya", "phittey",
+  "phitteymunh", "udaari", "saddgaya",
+  "vaddiyan", "langotiya", "puttardiyan",
+  "saaliyan", "randva", "haramzaadi",
+  "gaandvich", "fuddikhol", "tattebaj",
+  "khotadimaa", "sooardiaulad", "bhaindaputtar",
+  "kanjardimaa", "gashtidikuri", "laudeyadiaal",
+  "gandiyamunda", "nikhattupaaji", "vellaputtar",
+  "chhapridimaa", "penchoda", "bhainchoda",
+  "kuttekhasmanu", "sooarkiaulad", "gadheyadinasal",
+  "terimaapenchod", "teripenchod",
+];
+
+// ═══════════════════════════════════════
+// NEPALI GAALIS
+// ═══════════════════════════════════════
+const nepaliWords = [
+  "muji", "lado", "puti", "machikne", "randi",
+  "kukur", "gadha", "sungur", "boka", "machikney",
+  "mukhiya", "haguwa", "charpi", "jhyamma",
+  "bokaa", "randiko", "pakhe", "khate",
+  "dhoti", "bhedaa", "gadhaa", "sungurko",
+  "mujibhai", "latokhopey", "khaatey", "gaijaatre",
+  "jhantuko", "laaduko", "putiko", "randikochhoro",
+  "murkha", "aalchi", "kaamchor", "biraalaa",
+  "gadheroo", "chhyaproo", "jhantunath", "laadunath",
+  "bhaalu", "himaalko", "saalaa", "kukurko",
+  "machha", "randibaaz", "mutubhai", "gidarko",
+  "mujikobaan", "ladokhane", "putimarne",
+  "machiknekoban", "kukurjasto",
+  "gadhajasto", "sungurjasto", "bokajasto",
+  "randikocheli", "randikochhora",
+  "mujikonaati", "ladokotukra",
+  "haguwamanxe", "charpimakhune",
+  "bhedabuddi", "gadhabuddi", "sungurbuddi",
+  "pakheko", "khateko", "dhotiko",
+  "jhantubhai", "laadubhai", "putibhai",
+  "chhyapro", "gadheruko", "biraalko",
+  "sungurkomukh", "bokakokaan", "kukurkopuchchar",
+  "gadhakokaan", "bhedakokhutta", "gidarkomukh",
+  "mujimuji", "ladolado", "putiputi",
+  "machiknemachikne", "randikorandi",
+];
+
+// ═══════════════════════════════════════
+// ENGLISH CURSE WORDS
+// ═══════════════════════════════════════
+const englishWords = [
   "fuck", "shit", "damn", "ass", "bitch", "bastard", "crap", "dick",
   "piss", "hell", "douche", "moron", "idiot", "dumbass", "jackass",
   "asshole", "bullshit", "motherfucker", "fucker", "shithead",
@@ -64,59 +166,11 @@ export const curseWords = [
   "whore", "slut", "skank", "tramp", "hag", "sleaze",
   "turd", "fuckwit", "shitbag", "cocksucker", "cumstain",
   "fuckface", "shitshow", "clusterfuck", "shitstorm", "dirtbag",
-  // Hindi gaalis (romanized) - comprehensive
-  "chutiya", "madarchod", "behenchod", "bhosdike", "gaandu",
-  "harami", "kameena", "saala", "kutte", "gadhe",
-  "ullu", "bewakoof", "pagal", "chapri", "jhandu",
-  "tatti", "gandu", "chodu", "lavde", "bhosdi",
-  "randi", "haramkhor", "nalayak", "nikamma", "gadha",
-  "bakchod", "chirkut", "fattu", "lukkha", "lafanga",
-  "tapori", "ghatiya", "bekaar", "wahiyat", "bakwas",
-  "chutiyon", "kamina", "badtameez", "zaleel", "neech",
-  "gandmasti", "bhenchod", "laudu", "jhatu", "chakka",
-  "panauti", "duffer", "lodu", "bhadwa", "raand",
-  "tharki", "chamcha", "gulel", "dhakkan", "phattu",
-  "chutiyapa", "gaandphat", "bhosadpappu", "laudiya",
-  "jhaant", "chutad", "gaandmein", "maderchod",
-  "behen", "saali", "kutiya", "suar", "janwar",
-  "haraami", "harkati", "gandagi", "gandphat",
-  "charsi", "nashebaaz", "taklu", "motu", "langda",
-  "langoor", "bandar", "suarki", "bhikari", "chhakka",
-  "hijda", "tuchha", "gira", "kachra", "keeda",
-  "makoda", "cockroach", "chuhaa", "gadhedh", "dhonghi",
-  "pakhandhi", "bikau", "dalal", "tattisoch", "galiz",
-  "gandu", "bhenchod", "madarchod", "chutmarike",
-  "bhosdiwale", "lodebaaz", "chutiyagiri", "randibaaz",
-  "haraamzaade", "kamini", "saand", "bhains", "bakri",
-  "chutmaari", "gaandphati", "lauda", "lund", "chut",
-  "bhosda", "gaand", "jhaatu", "phuddu", "phuddi",
-  "chinal", "besharmi", "haramipana", "badmaash",
-  "gundaa", "lafangaa", "loafer", "awaara", "bigda",
-  "nikammi", "nalayaki", "bevda", "sharaabi", "nashebaazi",
-  // Punjabi gaalis (romanized)
-  "kutti", "kuttey", "haramdi", "chootni", "penchod",
-  "bhainchod", "terimaaki", "maachod", "laudeya",
-  "gashti", "kanjri", "khotey", "tattey", "phuddu",
-  "gandia", "ghaseeta", "haraamda", "kanjar",
-  "paaji", "badmaashi", "lulli", "fuddi", "fuddiyan",
-  "kuttiya", "khota", "gadheya", "sooar", "kutteyda",
-  "bhaindiyan", "gandasa", "chootad", "ulludepatthe",
-  "tatti", "tattiyaan", "buddhu", "vella", "nikhattu",
-  "painchoda", "maadarchoda", "bhaindiputtara",
-  "tuttpaineya", "ghanta", "lassanpatti", "chhapri",
-  // Nepali gaalis (romanized)
-  "muji", "lado", "puti", "machikne", "randi",
-  "kukur", "gadha", "sungur", "boka", "lado",
-  "mukhiya", "haguwa", "charpi", "jhyamma",
-  "bokaa", "randiko", "machikney", "pakhe",
-  "khate", "dhoti", "bhedaa", "gadhaa", "sungurko",
-  "mujibhai", "latokhopey", "khaatey", "gaijaatre",
-  "jhantuko", "laaduko", "putiko", "randikochhoro",
-  "murkha", "aalchi", "kaamchor", "biraalaa",
-  "gadheroo", "chhyaproo", "jhantunath", "laadunath",
-  "bhaalu", "himaalko", "saalaa", "kukurko",
-  "machha", "randibaaz", "mutubhai", "gidarko",
-  // Internet slang / gaming rage
+  "wankstain", "gobshite", "twatwaffle", "asswipe", "shitgibbon",
+  "fuckstick", "thundercunt", "cockwomble", "pissweasel",
+  "arsemonger", "shitlord", "dickweed", "bumblefuck",
+  "ratfuck", "crapweasel", "shitstain", "fuckknuckle",
+  "douchecanoe", "assbucket", "shitbird", "fuckbucket",
   "wtf", "lmao", "stfu", "gtfo", "smh", "bruh", "fml",
   "yolo", "noob", "trash", "toxic", "salty", "tryhard",
   "rage", "tilt", "copium", "ratio", "cringe", "boomer",
@@ -124,7 +178,10 @@ export const curseWords = [
   "ggez", "diffed", "gapped", "washed", "hardstuck",
 ];
 
-// Extreme rage bait gaalis - these get highest priority
+// All curse words combined for mixed mode
+const allCurseWords = [...hindiWords, ...punjabiWords, ...nepaliWords, ...englishWords];
+
+// Rage bait subset for mixed mode priority
 const rageBait = [
   "raand", "gandu", "chakka", "hijda", "randi",
   "chutiya", "madarchod", "behenchod", "bhosdike",
@@ -133,57 +190,44 @@ const rageBait = [
   "chutmarike", "bhosdiwale", "laudebaaz", "gaandphat",
   "chhakka", "hijada", "kinnar", "meetha",
   "randikhana", "chinalbaaz", "tharki", "bhadwa",
-  "dalal", "bikau", "gashti", "kanjri", "kanjar",
-  "lavdya", "jhantke", "gaandfat", "chutadbaaz",
-  "laudiya", "bhosadpappu", "tattisoch", "gandagi",
   "penchod", "bhainchod", "maachod", "painchoda",
-  "fuddi", "phuddu", "phuddi", "tattey",
-  "muji", "machikne", "lado", "puti",
+  "fuddi", "phuddu", "tattey", "muji", "machikne", "lado",
+  "fuck", "motherfucker", "cocksucker", "cunt", "asshole",
 ];
 
-// Hindi + Punjabi words pool
-const hindiPunjabi = [
-  // Heavy hitters
-  ...rageBait,
-  // More Hindi gaalis
-  "harami", "kameena", "saala", "kutte", "gadhe",
-  "bewakoof", "pagal", "chapri", "jhandu", "tatti",
-  "chodu", "lavde", "haramkhor", "nalayak", "bakchod",
-  "kamina", "badtameez", "laudu", "jhatu", "lodu",
-  "chutiyapa", "jhaant", "chutad", "maderchod",
-  "haraami", "charsi", "langoor", "bandar", "bhikari",
-  "keeda", "chutiyagiri", "randibaaz", "jhaatu",
-  "chinal", "badmaash", "gundaa", "bevda", "sharaabi",
-  "bakwas", "wahiyat", "ghatiya", "nikamma", "fattu",
-  "dhakkan", "panauti", "gandmasti", "besharmi",
-  "haramipana", "nalayaki", "nikammi", "lafanga",
-  // More Punjabi
-  "terimaaki", "laudeya", "khotey",
-  "gadheya", "sooar", "maadarchoda", "bhaindiputtara",
-  "tuttpaineya", "ghanta", "kutti", "kuttey",
-  "haraamda", "gandia", "ghaseeta", "chootad",
-  "ulludepatthe", "vella", "nikhattu", "chhapri",
-];
+function pick<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
 
 export function generateWords(count: number, mode: WordMode = "normal"): string[] {
-  if (mode === "normal") {
-    const words: string[] = [];
-    for (let i = 0; i < count; i++) {
-      words.push(commonWords[Math.floor(Math.random() * commonWords.length)]);
-    }
-    return words;
-  }
-
-  // Curse mode: 40% extreme rage bait, 35% Hindi/Punjabi, 25% full pool
   const words: string[] = [];
+
   for (let i = 0; i < count; i++) {
-    const r = Math.random();
-    if (r < 0.40) {
-      words.push(rageBait[Math.floor(Math.random() * rageBait.length)]);
-    } else if (r < 0.75) {
-      words.push(hindiPunjabi[Math.floor(Math.random() * hindiPunjabi.length)]);
-    } else {
-      words.push(curseWords[Math.floor(Math.random() * curseWords.length)]);
+    switch (mode) {
+      case "normal":
+        words.push(pick(commonWords));
+        break;
+      case "hindi":
+        words.push(pick(hindiWords));
+        break;
+      case "punjabi":
+        words.push(pick(punjabiWords));
+        break;
+      case "nepali":
+        words.push(pick(nepaliWords));
+        break;
+      case "english":
+        words.push(pick(englishWords));
+        break;
+      case "mixed": {
+        const r = Math.random();
+        if (r < 0.35) words.push(pick(rageBait));
+        else if (r < 0.60) words.push(pick(hindiWords));
+        else if (r < 0.75) words.push(pick(punjabiWords));
+        else if (r < 0.85) words.push(pick(nepaliWords));
+        else words.push(pick(englishWords));
+        break;
+      }
     }
   }
   return words;

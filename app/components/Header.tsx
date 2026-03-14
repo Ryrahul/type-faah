@@ -121,37 +121,44 @@ export default function Header({
             ))}
           </div>
 
-          {/* Word mode toggle */}
+          {/* Word mode pills */}
           <div
             className="flex items-center rounded-full"
             style={{
               backgroundColor: "var(--bg-secondary)",
-              padding: "4px 5px",
+              padding: "4px 4px",
               gap: "2px",
             }}
           >
-            {(["normal", "curse"] as WordMode[]).map((mode) => (
+            {([
+              { id: "normal" as WordMode, label: "Normal" },
+              { id: "mixed" as WordMode, label: "18+" },
+              { id: "hindi" as WordMode, label: "Hindi" },
+              { id: "punjabi" as WordMode, label: "Punjabi" },
+              { id: "nepali" as WordMode, label: "Nepali" },
+              { id: "english" as WordMode, label: "English" },
+            ]).map((m) => (
               <button
-                key={mode}
-                onClick={() => !isRunning && onWordModeChange(mode)}
+                key={m.id}
+                onClick={() => !isRunning && onWordModeChange(m.id)}
                 className="transition-all duration-200"
                 style={{
-                  padding: "5px 14px",
+                  padding: "5px 10px",
                   borderRadius: "20px",
-                  fontSize: "12px",
+                  fontSize: "11px",
                   fontWeight: 500,
                   backgroundColor:
-                    wordMode === mode ? "var(--bg-card)" : "transparent",
+                    wordMode === m.id ? "var(--bg-card)" : "transparent",
                   color:
-                    wordMode === mode ? "var(--accent)" : "var(--text)",
+                    wordMode === m.id ? "var(--accent)" : "var(--text)",
                   boxShadow:
-                    wordMode === mode ? "0 1px 4px rgba(0,0,0,0.3)" : "none",
-                  opacity: wordMode === mode ? 1 : (isRunning ? 0.35 : 0.55),
+                    wordMode === m.id ? "0 1px 4px rgba(0,0,0,0.3)" : "none",
+                  opacity: wordMode === m.id ? 1 : (isRunning ? 0.3 : 0.5),
                   cursor: isRunning ? "default" : "pointer",
                 }}
                 disabled={isRunning}
               >
-                {mode === "normal" ? "Normal" : "18+"}
+                {m.label}
               </button>
             ))}
           </div>

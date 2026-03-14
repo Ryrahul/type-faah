@@ -15,16 +15,16 @@ interface ResultsProps {
 
 function getAchievement(wpm: number, accuracy: number) {
   if (wpm > 100 && accuracy >= 95)
-    return { title: "TYPING GOD", sub: "Keyboard ka baap hai tu", color: "var(--text-correct)" };
+    return { title: "TYPING GOD", sub: "Keyboard ka baap hai tu", color: "var(--text-correct)", next: null };
   if (wpm > 80)
-    return { title: "EK JHAAT BHAR KA AADMI", sub: "Fingers on fire bhai", color: "var(--text-correct)" };
+    return { title: "EK JHAAT BHAR KA AADMI", sub: "Fingers on fire bhai", color: "var(--text-correct)", next: "Get 100+ WPM with 95% accuracy to become TYPING GOD" };
   if (wpm >= 65)
-    return { title: "ALAG HI LEVEL KA BANDA", sub: "Speed thi bhai... respect", color: "var(--accent)" };
+    return { title: "ALAG HI LEVEL KA BANDA", sub: "Speed thi bhai... respect", color: "var(--accent)", next: "Get 80+ WPM to unlock: \"Ek jhaat bhar ka aadmi\"" };
   if (wpm >= 45)
-    return { title: "THEEK THAAK HAI", sub: "Thoda aur practice kar", color: "var(--text-dim)" };
+    return { title: "THEEK THAAK HAI", sub: "Thoda aur practice kar", color: "var(--text-dim)", next: "Get 65+ WPM to unlock: \"Alag hi level ka banda\"" };
   if (wpm >= 25)
-    return { title: "NIKAL JAO", sub: "Mere samne se nikal jao", color: "var(--text-error)" };
-  return { title: "KYA THA YE?", sub: "Keyboard dekh ke type kar", color: "var(--text-error)" };
+    return { title: "NIKAL JAO", sub: "Mere samne se nikal jao", color: "var(--text-error)", next: "Get 45+ WPM to stop being a noob" };
+  return { title: "KYA THA YE?", sub: "Keyboard dekh ke type kar", color: "var(--text-error)", next: "Get 25+ WPM to prove you're human" };
 }
 
 export default function Results({
@@ -60,11 +60,20 @@ export default function Results({
         {achievement.title}
       </div>
       <div
-        className="text-[11px] mt-1 mb-14"
+        className="text-[11px] mt-1"
         style={{ color: "var(--text-dim)", opacity: 0.7 }}
       >
         {achievement.sub}
       </div>
+      {achievement.next && (
+        <div
+          className="text-[10px] mt-3 mb-14 tracking-wide px-4 py-2 rounded-lg"
+          style={{ color: "var(--text)", opacity: 0.4, backgroundColor: "var(--bg-secondary)" }}
+        >
+          {achievement.next}
+        </div>
+      )}
+      {!achievement.next && <div className="mb-14" />}
 
       {/* Stats row */}
       <div className="grid grid-cols-4 w-full mb-14" style={{ maxWidth: "520px" }}>
