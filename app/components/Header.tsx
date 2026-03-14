@@ -376,57 +376,67 @@ export default function Header({
                   onClick={() => setShowAlertMenu(false)}
                 />
                 <div
-                  className="absolute top-full right-0 mt-2 z-50 rounded-xl"
+                  className="absolute top-full right-0 mt-2 z-50 rounded-2xl"
                   style={{
                     backgroundColor: "var(--bg-secondary)",
                     border: "1px solid var(--border)",
-                    boxShadow: "0 8px 30px rgba(0,0,0,0.35)",
-                    padding: "14px 16px",
-                    minWidth: "200px",
+                    boxShadow: "0 12px 40px rgba(0,0,0,0.4)",
+                    padding: "16px 18px",
+                    width: "220px",
                   }}
                 >
                   <div
-                    className="text-[10px] uppercase tracking-[0.2em] font-medium mb-3"
+                    className="text-[9px] uppercase tracking-[0.3em] font-semibold mb-4"
                     style={{ color: "var(--text-dim)" }}
                   >
-                    Mistake alerts
+                    Mistake Alerts
                   </div>
-                  <div className="flex flex-col gap-3">
-                    <div className="flex items-center justify-between gap-4">
-                      <span className="text-[12px]" style={{ color: "var(--text)" }}>Alert 1</span>
-                      <select
-                        value={mistakeThreshold1}
-                        onChange={(e) => onMistakeThreshold1Change(Number(e.target.value))}
-                        className="text-[12px] rounded-lg px-2.5 py-1.5 cursor-pointer outline-none"
-                        style={{
-                          backgroundColor: "var(--bg-card)",
-                          color: "var(--text)",
-                          border: "1px solid var(--border)",
-                          minWidth: "80px",
-                        }}
-                      >
-                        {[3, 5, 7, 10, 15, 0].map((n) => (
-                          <option key={n} value={n}>{n === 0 ? "Off" : `${n} errors`}</option>
-                        ))}
-                      </select>
+
+                  {/* Alert 1 */}
+                  <div className="mb-4">
+                    <div className="text-[11px] font-medium mb-2" style={{ color: "var(--text)" }}>
+                      Alert 1 {mistakeThreshold1 === 0 && <span style={{ color: "var(--text-dim)" }}>(off)</span>}
                     </div>
-                    <div className="flex items-center justify-between gap-4">
-                      <span className="text-[12px]" style={{ color: "var(--text)" }}>Alert 2</span>
-                      <select
-                        value={mistakeThreshold2}
-                        onChange={(e) => onMistakeThreshold2Change(Number(e.target.value))}
-                        className="text-[12px] rounded-lg px-2.5 py-1.5 cursor-pointer outline-none"
-                        style={{
-                          backgroundColor: "var(--bg-card)",
-                          color: "var(--text)",
-                          border: "1px solid var(--border)",
-                          minWidth: "80px",
-                        }}
-                      >
-                        {[5, 10, 15, 20, 0].map((n) => (
-                          <option key={n} value={n}>{n === 0 ? "Off" : `${n} errors`}</option>
-                        ))}
-                      </select>
+                    <div className="flex flex-wrap gap-[5px]">
+                      {[3, 5, 7, 10, 15, 0].map((n) => (
+                        <button
+                          key={n}
+                          onClick={() => onMistakeThreshold1Change(n)}
+                          className="rounded-lg text-[11px] font-medium transition-all duration-150 cursor-pointer"
+                          style={{
+                            padding: "5px 10px",
+                            backgroundColor: mistakeThreshold1 === n ? "var(--bg-card)" : "transparent",
+                            color: mistakeThreshold1 === n ? "var(--accent)" : "var(--text-dim)",
+                            border: mistakeThreshold1 === n ? "1px solid var(--border)" : "1px solid transparent",
+                          }}
+                        >
+                          {n === 0 ? "Off" : n}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Alert 2 */}
+                  <div>
+                    <div className="text-[11px] font-medium mb-2" style={{ color: "var(--text)" }}>
+                      Alert 2 {mistakeThreshold2 === 0 && <span style={{ color: "var(--text-dim)" }}>(off)</span>}
+                    </div>
+                    <div className="flex flex-wrap gap-[5px]">
+                      {[5, 10, 15, 20, 0].map((n) => (
+                        <button
+                          key={n}
+                          onClick={() => onMistakeThreshold2Change(n)}
+                          className="rounded-lg text-[11px] font-medium transition-all duration-150 cursor-pointer"
+                          style={{
+                            padding: "5px 10px",
+                            backgroundColor: mistakeThreshold2 === n ? "var(--bg-card)" : "transparent",
+                            color: mistakeThreshold2 === n ? "var(--accent)" : "var(--text-dim)",
+                            border: mistakeThreshold2 === n ? "1px solid var(--border)" : "1px solid transparent",
+                          }}
+                        >
+                          {n === 0 ? "Off" : n}
+                        </button>
+                      ))}
                     </div>
                   </div>
                 </div>
