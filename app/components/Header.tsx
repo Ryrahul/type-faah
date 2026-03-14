@@ -75,7 +75,7 @@ export default function Header({
     soundProfiles.find((p) => p.id === soundProfile)?.label ?? soundProfile;
 
   return (
-    <header className="px-10 pt-14 pb-8 w-full relative">
+    <header className="px-10 py-5 w-full relative">
       <div className="flex items-center justify-between max-w-[1300px] mx-auto">
         {/* Logo */}
         <div className="flex items-center gap-2.5 select-none min-w-[140px]">
