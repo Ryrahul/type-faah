@@ -217,6 +217,38 @@ export default function Home() {
 
         if (soundEnabledRef.current) playSpaceSound(soundProfileRef.current);
 
+        // Count skipped characters as errors
+        const currentWord = words[currentWordIndex];
+        if (currentCharIndex < currentWord.length) {
+          const skipped = currentWord.length - currentCharIndex;
+          setIncorrectChars((prev) => prev + skipped);
+          setTotalCharsTyped((prev) => prev + skipped);
+
+          // Mark skipped chars as incorrect in typedChars
+          setTypedChars((prev) => {
+            const newTyped = [...prev];
+            const wordChars = [...(newTyped[currentWordIndex] || [])];
+            for (let i = currentCharIndex; i < currentWord.length; i++) {
+              wordChars.push({ char: " ", correct: false });
+            }
+            newTyped[currentWordIndex] = wordChars;
+            return newTyped;
+          });
+
+          // Check mistake sound milestones for the new total
+          const newCount = incorrectCharsRef.current + skipped;
+          if (soundEnabledRef.current && mt1Ref.current > 0) {
+            // Check each milestone that was crossed
+            const oldCount = incorrectCharsRef.current;
+            for (let m = oldCount + 1; m <= newCount; m++) {
+              if (m % mt1Ref.current === 0) {
+                const cycle = (m / mt1Ref.current) - 1;
+                playMistakeSoundByIndex(cycle % 3);
+              }
+            }
+          }
+        }
+
         setCurrentWordIndex((prev) => prev + 1);
         setCurrentCharIndex(0);
         setTotalCharsTyped((prev) => prev + 1);
