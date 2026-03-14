@@ -148,33 +148,33 @@ const nepaliWords = [
   // Heavy hitters - most common
   "muji", "lado", "puti", "machikne", "randi",
   "chikne", "bhalu", "kukur", "gadha", "boka",
-  "sungur", "haguwa", "chhada", "mula", "guu",
+  "sungur", "haguwa", "chhada", "mula", "guu", "twake", "radi",
   // Top aggressive
   "muji", "machikne", "lado", "puti", "randi",
   "randiko", "machikne", "chikne", "bhalu",
   // Direct insults
   "pakhe", "khate", "dhoti", "gobre", "dalle",
-  "kale", "geda", "fuchche", "tapke", "jhanto",
+  "kale", "geda", "fuchche", "tapke", "jatho",
   // Rage combos
   "randikochoro", "randikochori", "machiknemuji",
   "kukurchoro", "gadhachoro", "bhedachoro",
-  "bokachoro", "sungurchoro", "bhaluchoro",
+  "bokakochoro", "sungurkochoro", "bhalukouchoro", "radikochoro", "radikochori",
   // Character attacks
   "sala", "kamina", "badmas", "chor", "thag",
   "luchha", "lafanga", "dalal", "bikau", "chamcha",
-  "nachune", "lutho", "charsi", "surtiko",
+  "nachune", "lutho", "ganjedi", "twake",
   // Body / vulgar
-  "lado", "puti", "geda", "jhanto", "giddhi",
-  "tunto", "guu", "muto", "mut", "hag",
+  "lado", "puti", "geda", "jatho", "giddhi",
+  "tunto", "guu", "mut", "ladkokokapal", "putikobhutla", "kando", "gula", "gulo",
   // Animal insults
   "kukur", "sungur", "boka", "gadha", "bhalu",
   "gidar", "syaal", "biralo", "bandar", "ullu",
-  "sarpa", "chheparo",
+  "sarpa", "chheparo", "bhaisi",
   // Intensifiers
   "muji", "lado", "puti", "randi", "machikne",
-  "chikne", "haguwa", "mula", "chhada",
+  "chikne", "haguwa", "mula", "chhada", "radi", "gula", "gulo",
   // Popular phrases as single words
-  "bajiya", "dhatteri", "maarchikne", "hattpakhe",
+  "bajiya", "dhatteri", "machikne", "hattpakhe",
   "mujilado", "putimachikne", "randibhalu",
   "gedakha", "jhantomuji", "ladoboka",
   "kukurboka", "gadhapakhe", "bhedagobre",
