@@ -37,29 +37,33 @@ export default function TypingArea({
       const containerScroll = containerEl.scrollTop;
       const containerHeight = containerEl.clientHeight;
 
-      if (wordTop > containerScroll + containerHeight - 60) {
+      if (wordTop > containerScroll + containerHeight - 50) {
         containerEl.scrollTo({
-          top: wordTop - 40,
+          top: wordTop - 20,
           behavior: "smooth",
         });
       }
     }
   }, [currentWordIndex]);
 
-  // Memoize the visible words range to avoid re-rendering too many words
   const visibleRange = useMemo(() => {
-    const start = Math.max(0, currentWordIndex - 30);
-    const end = Math.min(words.length, currentWordIndex + 60);
+    const start = Math.max(0, currentWordIndex - 40);
+    const end = Math.min(words.length, currentWordIndex + 80);
     return { start, end };
   }, [currentWordIndex, words.length]);
 
   return (
-    <div className="relative w-full max-w-[900px] mx-auto px-4">
+    <div className="relative w-full max-w-[860px] mx-auto">
       {/* Timer display */}
       {timerDuration > 0 && (
         <div
-          className="text-5xl font-light mb-6 tabular-nums"
-          style={{ color: "var(--accent)", fontFamily: "var(--font-geist-mono)" }}
+          className="text-5xl font-extralight mb-8 tracking-tight"
+          style={{
+            color: "var(--accent)",
+            fontFamily: "var(--font-geist-mono)",
+            opacity: isRunning ? 1 : 0.4,
+            transition: "opacity 0.3s ease",
+          }}
         >
           {timeLeft !== null ? timeLeft : timerDuration}
         </div>
@@ -69,13 +73,22 @@ export default function TypingArea({
       <div
         ref={containerRef}
         onClick={onFocus}
-        className="relative h-[120px] overflow-hidden cursor-text"
+        className="relative h-[130px] overflow-hidden cursor-text select-none"
         style={{
-          maskImage: "linear-gradient(to bottom, transparent 0%, black 10%, black 70%, transparent 100%)",
-          WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 10%, black 70%, transparent 100%)",
+          maskImage:
+            "linear-gradient(to bottom, transparent 0%, black 15%, black 65%, transparent 100%)",
+          WebkitMaskImage:
+            "linear-gradient(to bottom, transparent 0%, black 15%, black 65%, transparent 100%)",
         }}
       >
-        <div className="flex flex-wrap gap-x-3 gap-y-2 text-2xl leading-relaxed font-mono">
+        <div
+          className="flex flex-wrap gap-x-[10px] gap-y-[8px] leading-[1.7]"
+          style={{
+            fontSize: "22px",
+            fontFamily: "var(--font-geist-mono)",
+            letterSpacing: "0.02em",
+          }}
+        >
           {words.slice(visibleRange.start, visibleRange.end).map((word, idx) => {
             const actualIdx = visibleRange.start + idx;
             const isCurrentWord = actualIdx === currentWordIndex;
@@ -90,7 +103,7 @@ export default function TypingArea({
               >
                 {word.split("").map((char, charIdx) => {
                   let color = "var(--text-dim)";
-                  let className = "";
+                  let textDecoration = "none";
 
                   if (isTypedWord || (isCurrentWord && charIdx < currentCharIndex)) {
                     const typedChar = wordTyped[charIdx];
@@ -99,12 +112,11 @@ export default function TypingArea({
                         ? "var(--text-correct)"
                         : "var(--text-error)";
                       if (!typedChar.correct) {
-                        className = "underline decoration-2 underline-offset-4";
+                        textDecoration = "underline";
                       }
                     }
                   }
 
-                  // Show cursor
                   const showCursor =
                     isFocused &&
                     isCurrentWord &&
@@ -112,16 +124,22 @@ export default function TypingArea({
                     !isTypedWord;
 
                   return (
-                    <span key={charIdx} className="relative">
+                    <span key={charIdx} className="relative inline-block">
                       {showCursor && (
                         <span
-                          className="absolute left-0 top-0 h-full w-[2px] cursor-blink -translate-x-[1px]"
+                          className="absolute left-0 top-[2px] bottom-[2px] w-[2.5px] cursor-blink rounded-full -translate-x-[1px]"
                           style={{ backgroundColor: "var(--cursor)" }}
                         />
                       )}
                       <span
-                        className={`transition-colors duration-100 ${className}`}
-                        style={{ color }}
+                        style={{
+                          color,
+                          textDecoration,
+                          textDecorationColor: "var(--text-error)",
+                          textUnderlineOffset: "5px",
+                          textDecorationThickness: "2px",
+                          transition: "color 0.15s ease",
+                        }}
                       >
                         {char}
                       </span>
@@ -132,23 +150,28 @@ export default function TypingArea({
                 {wordTyped.slice(word.length).map((typed, extraIdx) => (
                   <span
                     key={`extra-${extraIdx}`}
-                    className="underline decoration-2 underline-offset-4"
-                    style={{ color: "var(--text-error)" }}
+                    style={{
+                      color: "var(--text-error)",
+                      textDecoration: "underline",
+                      textDecorationColor: "var(--text-error)",
+                      textUnderlineOffset: "5px",
+                      textDecorationThickness: "2px",
+                      opacity: 0.8,
+                    }}
                   >
                     {typed.char}
                   </span>
                 ))}
-                {/* Cursor at end of word */}
+                {/* Cursor at end of current word */}
                 {isFocused &&
                   isCurrentWord &&
                   currentCharIndex >= word.length &&
                   currentCharIndex === wordTyped.length && (
                     <span
-                      className="absolute h-full w-[2px] cursor-blink"
+                      className="absolute top-[2px] bottom-[2px] w-[2.5px] cursor-blink rounded-full"
                       style={{
                         backgroundColor: "var(--cursor)",
-                        right: "-1px",
-                        top: 0,
+                        right: "-2px",
                       }}
                     />
                   )}
@@ -161,11 +184,12 @@ export default function TypingArea({
       {/* Focus overlay */}
       {!isFocused && (
         <div
-          className="absolute inset-0 flex items-center justify-center rounded-xl cursor-pointer"
+          className="absolute inset-0 flex items-center justify-center rounded-2xl cursor-pointer"
           onClick={onFocus}
           style={{
-            backgroundColor: "rgba(0,0,0,0.3)",
-            backdropFilter: "blur(4px)",
+            backgroundColor: "rgba(0,0,0,0.25)",
+            backdropFilter: "blur(5px)",
+            WebkitBackdropFilter: "blur(5px)",
           }}
         >
           <div
@@ -173,6 +197,7 @@ export default function TypingArea({
             style={{
               border: "1px solid var(--border)",
               color: "var(--text-dim)",
+              backgroundColor: "rgba(0,0,0,0.3)",
             }}
           >
             click or press any key to focus
@@ -181,26 +206,27 @@ export default function TypingArea({
       )}
 
       {/* Restart hint */}
-      {isRunning && (
-        <div
-          className="flex items-center justify-center gap-2 mt-8 text-sm"
-          style={{ color: "var(--text-dim)" }}
+      <div
+        className="flex items-center justify-center gap-2 mt-10 text-sm transition-opacity duration-300"
+        style={{
+          color: "var(--text-dim)",
+          opacity: isRunning ? 0.5 : 0,
+        }}
+      >
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         >
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" />
-          </svg>
-          <span>tab+enter or cmd+enter to restart</span>
-        </div>
-      )}
+          <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" />
+        </svg>
+        <span className="tracking-wide">tab+enter or cmd+enter to restart</span>
+      </div>
     </div>
   );
 }

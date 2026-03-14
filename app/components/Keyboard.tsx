@@ -16,7 +16,7 @@ interface KeyConfig {
 const keyboardRows: KeyConfig[][] = [
   // Function row
   [
-    { key: "Escape", label: "esc", width: 1.2 },
+    { key: "Escape", label: "esc", width: 1.1 },
     { key: "F1", label: "F1" },
     { key: "F2", label: "F2" },
     { key: "F3", label: "F3" },
@@ -44,13 +44,13 @@ const keyboardRows: KeyConfig[][] = [
     { key: "Digit8", label: "*", subLabel: "8" },
     { key: "Digit9", label: "(", subLabel: "9" },
     { key: "Digit0", label: ")", subLabel: "0" },
-    { key: "Minus", label: "_", subLabel: "-" },
+    { key: "Minus", label: "\u2014", subLabel: "-" },
     { key: "Equal", label: "+", subLabel: "=" },
-    { key: "Backspace", label: "\u2190", width: 1.6 },
+    { key: "Backspace", label: "\u2190", width: 1.5 },
   ],
   // QWERTY row
   [
-    { key: "Tab", label: "tab", width: 1.6 },
+    { key: "Tab", label: "tab", width: 1.5 },
     { key: "KeyQ", label: "Q" },
     { key: "KeyW", label: "W" },
     { key: "KeyE", label: "E" },
@@ -67,7 +67,7 @@ const keyboardRows: KeyConfig[][] = [
   ],
   // Home row
   [
-    { key: "CapsLock", label: "caps lock", width: 1.9 },
+    { key: "CapsLock", label: "caps lock", width: 1.8 },
     { key: "KeyA", label: "A" },
     { key: "KeyS", label: "S" },
     { key: "KeyD", label: "D" },
@@ -79,11 +79,11 @@ const keyboardRows: KeyConfig[][] = [
     { key: "KeyL", label: "L" },
     { key: "Semicolon", label: ":", subLabel: ";" },
     { key: "Quote", label: '"', subLabel: "'" },
-    { key: "Enter", label: "return", width: 1.9 },
+    { key: "Enter", label: "return", width: 1.8 },
   ],
   // Bottom row
   [
-    { key: "ShiftLeft", label: "shift", width: 2.4 },
+    { key: "ShiftLeft", label: "shift", width: 2.3 },
     { key: "KeyZ", label: "Z" },
     { key: "KeyX", label: "X" },
     { key: "KeyC", label: "C" },
@@ -94,19 +94,22 @@ const keyboardRows: KeyConfig[][] = [
     { key: "Comma", label: "<", subLabel: "," },
     { key: "Period", label: ">", subLabel: "." },
     { key: "Slash", label: "?", subLabel: "/" },
-    { key: "ShiftRight", label: "shift", width: 2.4 },
+    { key: "ShiftRight", label: "shift", width: 2.3 },
   ],
   // Space row
   [
-    { key: "ControlLeft", label: "ctrl", width: 1.3 },
-    { key: "AltLeft", label: "opt", width: 1.3 },
-    { key: "MetaLeft", label: "cmd", width: 1.3 },
-    { key: "Space", label: "", width: 6 },
-    { key: "MetaRight", label: "cmd", width: 1.3 },
-    { key: "AltRight", label: "opt", width: 1.3 },
-    { key: "ControlRight", label: "ctrl", width: 1.3 },
+    { key: "Fn", label: "fn", width: 1 },
+    { key: "ControlLeft", label: "ctrl", width: 1.2 },
+    { key: "AltLeft", label: "opt", width: 1.2 },
+    { key: "MetaLeft", label: "cmd", width: 1.5 },
+    { key: "Space", label: "", width: 5.8 },
+    { key: "MetaRight", label: "cmd", width: 1.5 },
+    { key: "AltRight", label: "opt", width: 1.2 },
   ],
 ];
+
+// Side column labels (pgup, pgdn, home, end)
+const sideLabels = ["", "pgup", "pgdn", "", "home", "end"];
 
 // Keys that get accent color styling
 const accentKeys = new Set([
@@ -122,6 +125,7 @@ const accentKeys = new Set([
   "AltRight",
   "MetaLeft",
   "MetaRight",
+  "Fn",
 ]);
 
 // Keys that get alt color styling
@@ -147,60 +151,84 @@ function getKeyStyle(keyCode: string, isPressed: boolean) {
     backgroundColor: bg,
     color: "var(--key-text)",
     boxShadow: isPressed
-      ? "0 1px 0 var(--key-shadow)"
-      : "0 3px 0 var(--key-shadow), 0 4px 6px rgba(0,0,0,0.15)",
+      ? "0 1px 0 var(--key-shadow), inset 0 0 0 1px rgba(0,0,0,0.05)"
+      : "0 2px 0 var(--key-shadow), 0 3px 4px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.4)",
     transform: isPressed ? "translateY(2px)" : "translateY(0)",
-    transition: "all 0.08s ease-out",
+    transition: "all 0.06s ease-out",
   };
 }
 
 export default function Keyboard({ pressedKeys }: KeyboardProps) {
   return (
     <div
-      className="w-full max-w-[920px] mx-auto rounded-2xl p-5 pb-6"
+      className="w-full max-w-[960px] mx-auto rounded-2xl p-4 pt-3 pb-5"
       style={{
-        background: "linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg) 100%)",
-        boxShadow: "0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05)",
+        background: "linear-gradient(180deg, var(--bg-secondary) 0%, color-mix(in srgb, var(--bg-secondary) 60%, var(--bg) 40%) 100%)",
+        boxShadow:
+          "0 8px 32px rgba(0,0,0,0.35), 0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)",
+        border: "1px solid rgba(255,255,255,0.04)",
       }}
     >
       {keyboardRows.map((row, rowIdx) => (
         <div
           key={rowIdx}
-          className={`flex gap-[4px] justify-center ${rowIdx === 0 ? "mb-3" : "mb-[4px]"}`}
+          className={`flex gap-[3px] justify-center items-center ${rowIdx === 0 ? "mb-2" : "mb-[3px]"}`}
         >
           {row.map((keyConfig) => {
             const isPressed = pressedKeys.has(keyConfig.key);
             const width = keyConfig.width || 1;
-            const baseWidth = 52;
+            const baseWidth = 54;
+            const isFnRow = rowIdx === 0;
 
             return (
               <div
                 key={keyConfig.key}
-                className="rounded-lg flex flex-col items-center justify-center text-xs font-medium select-none"
+                className="rounded-[6px] flex flex-col items-center justify-center font-medium select-none cursor-default"
                 style={{
                   ...getKeyStyle(keyConfig.key, isPressed),
-                  width: `${baseWidth * width + (width - 1) * 4}px`,
-                  height: rowIdx === 0 ? "36px" : "44px",
-                  fontSize: width > 1.5 ? "10px" : "12px",
+                  width: `${baseWidth * width + (width - 1) * 3}px`,
+                  height: isFnRow ? "32px" : "44px",
+                  borderRadius: "7px",
                 }}
               >
                 {keyConfig.subLabel ? (
-                  <>
-                    <span className="text-[9px] opacity-60 leading-none mb-0.5">
+                  <div className="flex flex-col items-center gap-[2px]">
+                    <span className="text-[9px] opacity-50 leading-none">
                       {keyConfig.label}
                     </span>
                     <span className="text-[12px] font-semibold leading-none">
                       {keyConfig.subLabel}
                     </span>
-                  </>
+                  </div>
                 ) : (
-                  <span className={`${width > 1.5 ? "text-[10px]" : "text-[13px] font-semibold"}`}>
+                  <span
+                    className={`${
+                      width > 1.3
+                        ? "text-[10px] tracking-wide"
+                        : isFnRow
+                        ? "text-[10px]"
+                        : "text-[13px] font-semibold"
+                    }`}
+                  >
                     {keyConfig.label}
                   </span>
                 )}
               </div>
             );
           })}
+
+          {/* Side label */}
+          {rowIdx > 0 && sideLabels[rowIdx - 1] && (
+            <div
+              className="ml-2 text-[9px] font-medium tracking-wider w-10 text-center select-none"
+              style={{ color: "var(--text-dim)", opacity: 0.5 }}
+            >
+              {sideLabels[rowIdx - 1]}
+            </div>
+          )}
+          {rowIdx > 0 && !sideLabels[rowIdx - 1] && (
+            <div className="ml-2 w-10" />
+          )}
         </div>
       ))}
     </div>
