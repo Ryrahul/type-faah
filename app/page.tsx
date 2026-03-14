@@ -22,7 +22,7 @@ export default function Home() {
   const [theme, setTheme] = useState("default");
   const [timerDuration, setTimerDuration] = useState(30);
   const [soundEnabled, setSoundEnabled] = useState(true);
-  const [soundProfile, setSoundProfile] = useState<SoundProfile>("thock");
+  const [soundProfile, setSoundProfile] = useState<SoundProfile>("bubble");
   const [mistakeThreshold1, setMistakeThreshold1] = useState(5);
   const [mistakeThreshold2, setMistakeThreshold2] = useState(10);
   const [wordMode, setWordMode] = useState<WordMode>("curse");

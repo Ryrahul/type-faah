@@ -124,29 +124,45 @@ export const curseWords = [
   "ggez", "diffed", "gapped", "washed", "hardstuck",
 ];
 
-// Hindi + Punjabi words get 3x weight in curse mode
+// Extreme rage bait gaalis - these get highest priority
+const rageBait = [
+  "raand", "gandu", "chakka", "hijda", "randi",
+  "chutiya", "madarchod", "behenchod", "bhosdike",
+  "lauda", "lund", "chut", "bhosda", "gaand",
+  "kutiya", "suar", "haraamzaade", "raandbaaz",
+  "chutmarike", "bhosdiwale", "laudebaaz", "gaandphat",
+  "chhakka", "hijada", "kinnar", "meetha",
+  "randikhana", "chinalbaaz", "tharki", "bhadwa",
+  "dalal", "bikau", "gashti", "kanjri", "kanjar",
+  "lavdya", "jhantke", "gaandfat", "chutadbaaz",
+  "laudiya", "bhosadpappu", "tattisoch", "gandagi",
+  "penchod", "bhainchod", "maachod", "painchoda",
+  "fuddi", "phuddu", "phuddi", "tattey",
+  "muji", "machikne", "lado", "puti",
+];
+
+// Hindi + Punjabi words pool
 const hindiPunjabi = [
-  // Core Hindi gaalis (high frequency)
-  "chutiya", "madarchod", "behenchod", "bhosdike", "gaandu",
+  // Heavy hitters
+  ...rageBait,
+  // More Hindi gaalis
   "harami", "kameena", "saala", "kutte", "gadhe",
   "bewakoof", "pagal", "chapri", "jhandu", "tatti",
-  "gandu", "chodu", "lavde", "randi", "haramkhor",
-  "nalayak", "bakchod", "kamina", "badtameez", "laudu",
-  "jhatu", "lodu", "bhadwa", "tharki", "chutiyapa",
-  "jhaant", "chutad", "maderchod", "kutiya", "suar",
+  "chodu", "lavde", "haramkhor", "nalayak", "bakchod",
+  "kamina", "badtameez", "laudu", "jhatu", "lodu",
+  "chutiyapa", "jhaant", "chutad", "maderchod",
   "haraami", "charsi", "langoor", "bandar", "bhikari",
-  "keeda", "dalal", "bhosdiwale", "chutiyagiri", "randibaaz",
-  "haraamzaade", "lauda", "lund", "chut", "bhosda",
-  "gaand", "jhaatu", "chinal", "badmaash", "gundaa",
-  "bevda", "sharaabi", "bakwas", "wahiyat", "ghatiya",
-  "nikamma", "fattu", "dhakkan", "panauti", "gandagi",
-  // Core Punjabi gaalis (high frequency)
-  "penchod", "bhainchod", "terimaaki", "maachod", "laudeya",
-  "gashti", "kanjri", "khotey", "tattey", "kanjar",
-  "fuddi", "kuttiya", "gadheya", "sooar", "painchoda",
-  "maadarchoda", "bhaindiputtara", "tuttpaineya", "ghanta",
-  "kutti", "kuttey", "haraamda", "gandia", "ghaseeta",
-  "chootad", "ulludepatthe", "vella", "nikhattu", "chhapri",
+  "keeda", "chutiyagiri", "randibaaz", "jhaatu",
+  "chinal", "badmaash", "gundaa", "bevda", "sharaabi",
+  "bakwas", "wahiyat", "ghatiya", "nikamma", "fattu",
+  "dhakkan", "panauti", "gandmasti", "besharmi",
+  "haramipana", "nalayaki", "nikammi", "lafanga",
+  // More Punjabi
+  "terimaaki", "laudeya", "khotey",
+  "gadheya", "sooar", "maadarchoda", "bhaindiputtara",
+  "tuttpaineya", "ghanta", "kutti", "kuttey",
+  "haraamda", "gandia", "ghaseeta", "chootad",
+  "ulludepatthe", "vella", "nikhattu", "chhapri",
 ];
 
 export function generateWords(count: number, mode: WordMode = "normal"): string[] {
@@ -158,10 +174,13 @@ export function generateWords(count: number, mode: WordMode = "normal"): string[
     return words;
   }
 
-  // Curse mode: 65% Hindi/Punjabi, 35% full pool (English/Nepali/slang)
+  // Curse mode: 40% extreme rage bait, 35% Hindi/Punjabi, 25% full pool
   const words: string[] = [];
   for (let i = 0; i < count; i++) {
-    if (Math.random() < 0.65) {
+    const r = Math.random();
+    if (r < 0.40) {
+      words.push(rageBait[Math.floor(Math.random() * rageBait.length)]);
+    } else if (r < 0.75) {
       words.push(hindiPunjabi[Math.floor(Math.random() * hindiPunjabi.length)]);
     } else {
       words.push(curseWords[Math.floor(Math.random() * curseWords.length)]);
