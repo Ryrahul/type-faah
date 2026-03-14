@@ -53,29 +53,29 @@ export default function Results({
 
       <div className="h-2" />
 
-      <div className="text-[11px] uppercase tracking-[0.45em] font-medium" style={{ color: "var(--text-dim)" }}>
+      <div className="text-[14px] uppercase tracking-[0.45em] font-medium" style={{ color: "var(--text-dim)" }}>
         words per minute
       </div>
 
       <div className="h-10" />
 
       {/* Achievement */}
-      <div className="text-[13px] uppercase tracking-[0.3em] font-bold" style={{ color: achievement.color }}>
+      <div className="text-[16px] uppercase tracking-[0.3em] font-bold" style={{ color: achievement.color }}>
         {achievement.title}
       </div>
 
       <div className="h-2" />
 
-      <div className="text-[12px]" style={{ color: "var(--text-dim)", opacity: 0.7 }}>
+      <div className="text-[14px]" style={{ color: "var(--text-dim)", opacity: 0.7 }}>
         {achievement.sub}
       </div>
 
       {achievement.next && (
         <>
-          <div className="h-4" />
+          <div className="h-5" />
           <div
-            className="text-[11px] tracking-wide px-5 py-2.5 rounded-full"
-            style={{ color: "var(--text)", opacity: 0.4, border: "1px solid var(--border)" }}
+            className="text-[13px] tracking-wide px-6 py-3 rounded-full"
+            style={{ color: "var(--text)", opacity: 0.5, border: "1px solid var(--border)" }}
           >
             {achievement.next}
           </div>
@@ -85,7 +85,7 @@ export default function Results({
       <div className="h-12" />
 
       {/* Stats */}
-      <div className="grid grid-cols-4 w-full" style={{ maxWidth: "520px" }}>
+      <div className="grid grid-cols-4 w-full" style={{ maxWidth: "580px" }}>
         <StatCell label="raw" value={rawWpm.toString()} />
         <StatCell label="accuracy" value={`${accuracy}%`} highlight={accuracy >= 90} border />
         <StatCell label="correct/err" value={correctChars.toString()} sub={`/${incorrectChars}`} border />
@@ -125,10 +125,10 @@ function StatCell({ label, value, sub, highlight, border }: {
 }) {
   return (
     <div className="text-center py-1" style={border ? { borderLeft: "1px solid var(--border)" } : undefined}>
-      <div className="text-[10px] uppercase tracking-[0.2em] font-medium mb-2" style={{ color: "var(--text-dim)" }}>{label}</div>
+      <div className="text-[12px] uppercase tracking-[0.2em] font-medium mb-2" style={{ color: "var(--text-dim)" }}>{label}</div>
       <div className="flex items-baseline justify-center gap-0.5">
-        <span className="text-[24px] font-bold tabular-nums" style={{ color: highlight ? "var(--text-correct)" : "var(--accent)", fontFamily: "var(--font-geist-mono)" }}>{value}</span>
-        {sub && <span className="text-[13px] tabular-nums" style={{ color: "var(--text-dim)", fontFamily: "var(--font-geist-mono)" }}>{sub}</span>}
+        <span className="text-[28px] font-bold tabular-nums" style={{ color: highlight ? "var(--text-correct)" : "var(--accent)", fontFamily: "var(--font-geist-mono)" }}>{value}</span>
+        {sub && <span className="text-[15px] tabular-nums" style={{ color: "var(--text-dim)", fontFamily: "var(--font-geist-mono)" }}>{sub}</span>}
       </div>
     </div>
   );
