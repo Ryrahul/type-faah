@@ -392,10 +392,10 @@ export default function Header({
                     Mistake Alerts
                   </div>
 
-                  {/* Alert 1 */}
-                  <div className="mb-4">
-                    <div className="text-[11px] font-medium mb-2" style={{ color: "var(--text)" }}>
-                      Alert 1 {mistakeThreshold1 === 0 && <span style={{ color: "var(--text-dim)" }}>(off)</span>}
+                  {/* Interval */}
+                  <div>
+                    <div className="text-[11px] font-medium mb-2.5" style={{ color: "var(--text)" }}>
+                      Every {mistakeThreshold1 > 0 ? `${mistakeThreshold1} errors` : ""} {mistakeThreshold1 === 0 && <span style={{ color: "var(--text-dim)" }}>off</span>}
                     </div>
                     <div className="flex flex-wrap gap-[5px]">
                       {[3, 5, 7, 10, 15, 0].map((n) => (
@@ -414,30 +414,11 @@ export default function Header({
                         </button>
                       ))}
                     </div>
-                  </div>
-
-                  {/* Alert 2 */}
-                  <div>
-                    <div className="text-[11px] font-medium mb-2" style={{ color: "var(--text)" }}>
-                      Alert 2 {mistakeThreshold2 === 0 && <span style={{ color: "var(--text-dim)" }}>(off)</span>}
-                    </div>
-                    <div className="flex flex-wrap gap-[5px]">
-                      {[5, 10, 15, 20, 0].map((n) => (
-                        <button
-                          key={n}
-                          onClick={() => onMistakeThreshold2Change(n)}
-                          className="rounded-lg text-[11px] font-medium transition-all duration-150 cursor-pointer"
-                          style={{
-                            padding: "5px 10px",
-                            backgroundColor: mistakeThreshold2 === n ? "var(--bg-card)" : "transparent",
-                            color: mistakeThreshold2 === n ? "var(--accent)" : "var(--text-dim)",
-                            border: mistakeThreshold2 === n ? "1px solid var(--border)" : "1px solid transparent",
-                          }}
-                        >
-                          {n === 0 ? "Off" : n}
-                        </button>
-                      ))}
-                    </div>
+                    {mistakeThreshold1 > 0 && (
+                      <div className="text-[10px] mt-2.5" style={{ color: "var(--text-dim)", opacity: 0.6 }}>
+                        3 sounds cycle every {mistakeThreshold1} errors
+                      </div>
+                    )}
                   </div>
                 </div>
               </>

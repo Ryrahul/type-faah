@@ -7,7 +7,7 @@ import Keyboard from "./components/Keyboard";
 import Results from "./components/Results";
 import { generateWords } from "./lib/words";
 import type { WordMode } from "./lib/words";
-import { playKeySound, playSpaceSound, playCompleteSound, playMistakeSound } from "./lib/sounds";
+import { playKeySound, playSpaceSound, playCompleteSound, playMistakeSoundByIndex } from "./lib/sounds";
 import type { SoundProfile } from "./lib/sounds";
 
 type GameState = "idle" | "running" | "finished";
@@ -233,14 +233,12 @@ export default function Home() {
           setCorrectChars((prev) => prev + 1);
         } else {
           setIncorrectChars((prev) => prev + 1);
-          // Play mistake sounds every N errors (repeating)
+          // Play mistake sounds cycling through 3 sounds
+          // At every interval: sound 0 → sound 1 → sound 2 → sound 0 → ...
           const newCount = incorrectCharsRef.current + 1;
-          if (soundEnabledRef.current) {
-            if (mt2Ref.current > 0 && newCount % mt2Ref.current === 0) {
-              playMistakeSound(10);
-            } else if (mt1Ref.current > 0 && newCount % mt1Ref.current === 0) {
-              playMistakeSound(5);
-            }
+          if (soundEnabledRef.current && mt1Ref.current > 0 && newCount % mt1Ref.current === 0) {
+            const cycle = (newCount / mt1Ref.current) - 1; // 0, 1, 2, 3, 4...
+            playMistakeSoundByIndex(cycle % 3); // rotates through 3 sounds
           }
         }
         setTotalCharsTyped((prev) => prev + 1);
