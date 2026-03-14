@@ -39,53 +39,60 @@ export default function Results({
   const achievement = getAchievement(wpm, accuracy);
 
   return (
-    <div className="w-full flex flex-col items-center fade-in-up px-4">
-      {/* WPM number */}
+    <div
+      className="w-full flex flex-col items-center fade-in-up px-4"
+      style={{ gap: "0px" }}
+    >
+      {/* WPM */}
       <div
         className="text-[130px] font-extralight tabular-nums leading-none"
         style={{ color: "var(--accent)", fontFamily: "var(--font-geist-mono)" }}
       >
         {wpm}
       </div>
-      <div
-        className="text-[11px] uppercase tracking-[0.45em] font-medium mt-2 mb-8"
-        style={{ color: "var(--text-dim)" }}
-      >
+
+      <div className="h-2" />
+
+      <div className="text-[11px] uppercase tracking-[0.45em] font-medium" style={{ color: "var(--text-dim)" }}>
         words per minute
       </div>
 
+      <div className="h-10" />
+
       {/* Achievement */}
-      <div
-        className="text-[13px] uppercase tracking-[0.3em] font-bold"
-        style={{ color: achievement.color }}
-      >
+      <div className="text-[13px] uppercase tracking-[0.3em] font-bold" style={{ color: achievement.color }}>
         {achievement.title}
       </div>
-      <div
-        className="text-[12px] mt-2 mb-4"
-        style={{ color: "var(--text-dim)", opacity: 0.7 }}
-      >
+
+      <div className="h-2" />
+
+      <div className="text-[12px]" style={{ color: "var(--text-dim)", opacity: 0.7 }}>
         {achievement.sub}
       </div>
 
-      {/* Next tier hint */}
       {achievement.next && (
-        <div
-          className="text-[11px] tracking-wide px-5 py-2.5 rounded-full mb-10"
-          style={{ color: "var(--text)", opacity: 0.45, border: "1px solid var(--border)" }}
-        >
-          {achievement.next}
-        </div>
+        <>
+          <div className="h-4" />
+          <div
+            className="text-[11px] tracking-wide px-5 py-2.5 rounded-full"
+            style={{ color: "var(--text)", opacity: 0.4, border: "1px solid var(--border)" }}
+          >
+            {achievement.next}
+          </div>
+        </>
       )}
-      {!achievement.next && <div className="mb-10" />}
+
+      <div className="h-12" />
 
       {/* Stats */}
-      <div className="grid grid-cols-4 w-full mb-12" style={{ maxWidth: "520px" }}>
+      <div className="grid grid-cols-4 w-full" style={{ maxWidth: "520px" }}>
         <StatCell label="raw" value={rawWpm.toString()} />
         <StatCell label="accuracy" value={`${accuracy}%`} highlight={accuracy >= 90} border />
         <StatCell label="correct/err" value={correctChars.toString()} sub={`/${incorrectChars}`} border />
         <StatCell label="time" value={`${timeElapsed}s`} border />
       </div>
+
+      <div className="h-12" />
 
       {/* Restart */}
       <button
@@ -103,7 +110,10 @@ export default function Results({
         </svg>
         Restart Test
       </button>
-      <div className="mt-2.5 text-[10px] uppercase tracking-[0.25em]" style={{ color: "var(--text-dim)", opacity: 0.25 }}>
+
+      <div className="h-2" />
+
+      <div className="text-[10px] uppercase tracking-[0.25em]" style={{ color: "var(--text-dim)", opacity: 0.25 }}>
         tab + enter
       </div>
     </div>
