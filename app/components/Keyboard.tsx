@@ -1,266 +1,263 @@
 "use client";
 
 import React from "react";
+import {
+  IconSun,
+  IconSunLow,
+  IconLayoutGrid,
+  IconSearch,
+  IconMicrophone,
+  IconMoon,
+  IconPlayerTrackPrev,
+  IconPlayerPlay,
+  IconPlayerTrackNext,
+  IconVolume3,
+  IconVolume,
+  IconVolume2,
+  IconBrightnessUp,
+  IconCommand,
+  IconArrowBigUp,
+  IconCornerDownLeft,
+  IconBackspace,
+  IconChevronUp,
+  IconChevronDown,
+  IconChevronLeft,
+  IconChevronRight,
+} from "@tabler/icons-react";
 
 interface KeyboardProps {
   pressedKeys: Set<string>;
 }
 
-interface KeyConfig {
-  key: string;
+// ──── Key Component ────
+function Key({
+  code,
+  label,
+  subLabel,
+  icon,
+  subIcon,
+  width = 1,
+  height = 1,
+  isPressed,
+  isCorner,
+  isFnRow,
+}: {
+  code: string;
   label?: string;
   subLabel?: string;
-  subIcon?: string;
+  icon?: React.ReactNode;
+  subIcon?: React.ReactNode;
   width?: number;
-}
+  height?: number;
+  isPressed: boolean;
+  isCorner?: "tl" | "tr" | "bl" | "br";
+  isFnRow?: boolean;
+}) {
+  const baseW = 56;
+  const gap = 3;
+  const w = baseW * width + gap * (width - 1);
+  const h = isFnRow ? 30 : 44 * height;
 
-const keyboardRows: KeyConfig[][] = [
-  // Function row
-  [
-    { key: "Escape", label: "esc", width: 1.1 },
-    { key: "F1", subIcon: "\u2600", label: "F1" },
-    { key: "F2", subIcon: "\u2600", label: "F2" },
-    { key: "F3", subIcon: "\u2395", label: "F3" },
-    { key: "F4", subIcon: "\u2315", label: "F4" },
-    { key: "F5", subIcon: "\u266A", label: "F5" },
-    { key: "F6", subIcon: "\u263D", label: "F6" },
-    { key: "F7", subIcon: "\u23EA", label: "F7" },
-    { key: "F8", subIcon: "\u23EF", label: "F8" },
-    { key: "F9", subIcon: "\u23E9", label: "F9" },
-    { key: "F10", subIcon: "\u266A", label: "F10" },
-    { key: "F11", subIcon: "\u266A", label: "F11" },
-    { key: "F12", subIcon: "\u266B", label: "F12" },
-    { key: "Delete", label: "del" },
-  ],
-  // Number row
-  [
-    { key: "Backquote", label: "~", subLabel: "`" },
-    { key: "Digit1", label: "!", subLabel: "1" },
-    { key: "Digit2", label: "@", subLabel: "2" },
-    { key: "Digit3", label: "#", subLabel: "3" },
-    { key: "Digit4", label: "$", subLabel: "4" },
-    { key: "Digit5", label: "%", subLabel: "5" },
-    { key: "Digit6", label: "^", subLabel: "6" },
-    { key: "Digit7", label: "&", subLabel: "7" },
-    { key: "Digit8", label: "*", subLabel: "8" },
-    { key: "Digit9", label: "(", subLabel: "9" },
-    { key: "Digit0", label: ")", subLabel: "0" },
-    { key: "Minus", label: "\u2014", subLabel: "-" },
-    { key: "Equal", label: "+", subLabel: "=" },
-    { key: "Backspace", label: "\u2190", width: 1.5 },
-  ],
-  // QWERTY row
-  [
-    { key: "Tab", label: "tab", width: 1.5 },
-    { key: "KeyQ", label: "Q" },
-    { key: "KeyW", label: "W" },
-    { key: "KeyE", label: "E" },
-    { key: "KeyR", label: "R" },
-    { key: "KeyT", label: "T" },
-    { key: "KeyY", label: "Y" },
-    { key: "KeyU", label: "U" },
-    { key: "KeyI", label: "I" },
-    { key: "KeyO", label: "O" },
-    { key: "KeyP", label: "P" },
-    { key: "BracketLeft", label: "{", subLabel: "[" },
-    { key: "BracketRight", label: "}", subLabel: "]" },
-    { key: "Backslash", label: "|", subLabel: "\\" },
-  ],
-  // Home row
-  [
-    { key: "CapsLock", label: "caps lock", width: 1.8 },
-    { key: "KeyA", label: "A" },
-    { key: "KeyS", label: "S" },
-    { key: "KeyD", label: "D" },
-    { key: "KeyF", label: "F" },
-    { key: "KeyG", label: "G" },
-    { key: "KeyH", label: "H" },
-    { key: "KeyJ", label: "J" },
-    { key: "KeyK", label: "K" },
-    { key: "KeyL", label: "L" },
-    { key: "Semicolon", label: ":", subLabel: ";" },
-    { key: "Quote", label: '"', subLabel: "'" },
-    { key: "Enter", label: "return", width: 1.7 },
-  ],
-  // Bottom row
-  [
-    { key: "ShiftLeft", label: "shift", width: 2.25 },
-    { key: "KeyZ", label: "Z" },
-    { key: "KeyX", label: "X" },
-    { key: "KeyC", label: "C" },
-    { key: "KeyV", label: "V" },
-    { key: "KeyB", label: "B" },
-    { key: "KeyN", label: "N" },
-    { key: "KeyM", label: "M" },
-    { key: "Comma", label: "<", subLabel: "," },
-    { key: "Period", label: ">", subLabel: "." },
-    { key: "Slash", label: "?", subLabel: "/" },
-    { key: "ShiftRight", label: "shift", width: 2.25 },
-  ],
-  // Space row
-  [
-    { key: "Fn", label: "fn", width: 1 },
-    { key: "ControlLeft", label: "ctrl", width: 1.25 },
-    { key: "AltLeft", label: "opt", width: 1.25 },
-    { key: "MetaLeft", label: "cmd", width: 1.5 },
-    { key: "Space", label: "", width: 5.5 },
-    { key: "MetaRight", label: "cmd", width: 1.5 },
-    { key: "AltRight", label: "opt", width: 1.25 },
-  ],
-];
+  // Corner-specific rounding
+  let borderRadius = "7px";
+  if (isCorner === "tl") borderRadius = "12px 7px 7px 7px";
+  else if (isCorner === "tr") borderRadius = "7px 12px 7px 7px";
+  else if (isCorner === "bl") borderRadius = "7px 7px 7px 12px";
+  else if (isCorner === "br") borderRadius = "7px 7px 12px 7px";
 
-// Side labels
-const sideLabelsMap: Record<number, string> = {
-  2: "pgup",
-  3: "pgdn",
-  5: "home",
-  6: "end",
-};
-
-// Accent colored modifier keys
-const accentKeys = new Set([
-  "Escape", "Tab", "CapsLock", "ShiftLeft", "ShiftRight", "Enter",
-  "ControlLeft", "ControlRight", "AltLeft", "AltRight",
-  "MetaLeft", "MetaRight", "Fn",
-]);
-
-// Muted alt-colored keys
-const altKeys = new Set([
-  "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12",
-  "Delete", "Backspace",
-  "Backquote", "BracketLeft", "BracketRight", "Backslash",
-  "Semicolon", "Quote", "Comma", "Period", "Slash",
-  "Minus", "Equal",
-]);
-
-function getKeyStyle(keyCode: string, isPressed: boolean) {
-  const isAccent = accentKeys.has(keyCode);
-  const isAlt = altKeys.has(keyCode);
-
-  let bg = "var(--key-bg)";
-  if (isAccent) bg = "var(--key-bg-accent)";
-  else if (isAlt) bg = "var(--key-bg-alt)";
-  if (isPressed) bg = "var(--key-active)";
-
-  return {
-    backgroundColor: bg,
-    color: "var(--key-text)",
-    boxShadow: isPressed
-      ? `0 1px 0 0 var(--key-shadow),
-         inset 0 1px 2px rgba(0,0,0,0.1)`
-      : `0 4px 0 0 var(--key-shadow),
-         0 6px 10px rgba(0,0,0,0.15),
-         inset 0 1px 0 rgba(255,255,255,0.5),
-         inset 0 -1px 0 rgba(0,0,0,0.08)`,
-    transform: isPressed ? "translateY(3px)" : "translateY(0)",
-    transition: "transform 0.05s ease-out, box-shadow 0.05s ease-out, background-color 0.05s ease-out",
-  };
-}
-
-// Key size constants
-const GAP = 5;
-const BASE = 70;
-
-export default function Keyboard({ pressedKeys }: KeyboardProps) {
   return (
     <div
-      className="mx-auto"
+      className="flex flex-col items-center justify-center select-none cursor-default font-medium"
       style={{
-        width: "fit-content",
-        padding: "18px 24px 24px 24px",
-        borderRadius: "18px",
-        background:
-          "linear-gradient(170deg, color-mix(in srgb, var(--bg-secondary) 90%, white 10%) 0%, var(--bg-secondary) 40%, color-mix(in srgb, var(--bg-secondary) 85%, black 15%) 100%)",
-        boxShadow:
-          `0 20px 60px rgba(0,0,0,0.4),
-           0 4px 12px rgba(0,0,0,0.25),
-           inset 0 1px 0 rgba(255,255,255,0.08),
-           inset 0 -1px 0 rgba(0,0,0,0.2)`,
-        border: "1px solid rgba(255,255,255,0.06)",
+        width: `${w}px`,
+        height: `${h}px`,
+        borderRadius,
+        flexShrink: 0,
+        backgroundColor: isPressed ? "var(--key-active)" : "var(--key-bg)",
+        color: "var(--key-text)",
+        transform: isPressed ? "scale(0.98) translateY(1px)" : "scale(1) translateY(0)",
+        transition: "transform 0.06s ease, box-shadow 0.06s ease, background-color 0.06s ease",
+        boxShadow: isPressed
+          ? "inset 0 1px 3px rgba(0,0,0,0.15), 0 0 0 0.5px rgba(0,0,0,0.08)"
+          : `inset 0 1px 0 rgba(255,255,255,0.7),
+             inset 0 -1px 0 rgba(0,0,0,0.06),
+             0 1px 2px rgba(0,0,0,0.08),
+             0 0 0 0.5px rgba(0,0,0,0.06)`,
       }}
     >
-      {keyboardRows.map((row, rowIdx) => {
-        const isFnRow = rowIdx === 0;
-        const sideLabel = sideLabelsMap[rowIdx];
+      {/* Icon-only key (fn row with icons) */}
+      {subIcon && !subLabel && (
+        <div className="flex flex-col items-center gap-[1px]">
+          <span style={{ opacity: 0.5 }}>{subIcon}</span>
+          {label && (
+            <span className="text-[8px] font-medium leading-none" style={{ opacity: 0.5 }}>
+              {label}
+            </span>
+          )}
+        </div>
+      )}
 
-        return (
-          <div
-            key={rowIdx}
-            className={`flex items-center ${isFnRow ? "mb-[8px]" : rowIdx < keyboardRows.length - 1 ? "mb-[5px]" : ""}`}
-          >
-            {/* Keys */}
-            <div className="flex" style={{ gap: `${GAP}px` }}>
-              {row.map((keyConfig) => {
-                const isPressed = pressedKeys.has(keyConfig.key);
-                const w = keyConfig.width || 1;
-                const keyWidth = BASE * w + GAP * (w - 1);
-                const keyHeight = isFnRow ? 38 : 52;
+      {/* Number key with symbol */}
+      {subLabel && !subIcon && (
+        <div className="flex flex-col items-center gap-[1px]">
+          <span className="text-[9px] leading-none" style={{ opacity: 0.35 }}>
+            {label}
+          </span>
+          <span className="text-[13px] font-semibold leading-none">
+            {subLabel}
+          </span>
+        </div>
+      )}
 
-                return (
-                  <div
-                    key={keyConfig.key}
-                    className="flex flex-col items-center justify-center font-medium select-none cursor-default"
-                    style={{
-                      ...getKeyStyle(keyConfig.key, isPressed),
-                      width: `${keyWidth}px`,
-                      height: `${keyHeight}px`,
-                      borderRadius: "10px",
-                      flexShrink: 0,
-                    }}
-                  >
-                    {keyConfig.subLabel ? (
-                      <div className="flex flex-col items-center gap-[2px]">
-                        <span className="text-[9px] opacity-45 leading-none">
-                          {keyConfig.label}
-                        </span>
-                        <span className="text-[14px] font-semibold leading-none">
-                          {keyConfig.subLabel}
-                        </span>
-                      </div>
-                    ) : isFnRow && keyConfig.subIcon ? (
-                      <div className="flex flex-col items-center gap-[3px]">
-                        <span className="text-[10px] opacity-40 leading-none">
-                          {keyConfig.subIcon}
-                        </span>
-                        <span className="text-[10px] font-medium leading-none opacity-70">
-                          {keyConfig.label}
-                        </span>
-                      </div>
-                    ) : (
-                      <span
-                        className={`${
-                          w > 1.3
-                            ? "text-[11px] tracking-wide"
-                            : isFnRow
-                            ? "text-[10px]"
-                            : "text-[15px] font-semibold"
-                        }`}
-                      >
-                        {keyConfig.label}
-                      </span>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+      {/* Icon-only (like backspace, return) */}
+      {icon && !subLabel && !subIcon && (
+        <span style={{ opacity: 0.8 }}>{icon}</span>
+      )}
 
-            {/* Side label column */}
-            {rowIdx > 0 && (
-              <div
-                className="text-[9px] font-medium tracking-[0.15em] text-center select-none flex-shrink-0"
-                style={{
-                  color: "var(--text-dim)",
-                  opacity: sideLabel ? 0.35 : 0,
-                  width: "52px",
-                  marginLeft: "10px",
-                }}
-              >
-                {sideLabel || "\u00A0"}
-              </div>
-            )}
+      {/* Text-only key */}
+      {!subLabel && !subIcon && !icon && label && (
+        <span
+          className={`leading-none ${
+            width > 1.3
+              ? "text-[9px] tracking-wider"
+              : isFnRow
+              ? "text-[9px]"
+              : "text-[13px] font-semibold"
+          }`}
+          style={{ opacity: width > 1.3 ? 0.7 : 1 }}
+        >
+          {label}
+        </span>
+      )}
+    </div>
+  );
+}
+
+// ──── Keyboard Layout ────
+export default function Keyboard({ pressedKeys }: KeyboardProps) {
+  const p = (code: string) => pressedKeys.has(code);
+  const gap = "3px";
+
+  return (
+    <div
+      className="mx-auto select-none"
+      style={{
+        width: "fit-content",
+        padding: "10px 10px 12px",
+        borderRadius: "14px",
+        background: "color-mix(in srgb, var(--bg-secondary) 80%, var(--bg) 20%)",
+        boxShadow: `0 12px 40px rgba(0,0,0,0.3),
+                     0 2px 8px rgba(0,0,0,0.2),
+                     inset 0 0.5px 0 rgba(255,255,255,0.06)`,
+        border: "1px solid rgba(255,255,255,0.04)",
+      }}
+    >
+      {/* Function Row */}
+      <div className="flex mb-[4px]" style={{ gap }}>
+        <Key code="Escape" label="esc" isPressed={p("Escape")} isCorner="tl" isFnRow />
+        <Key code="F1" label="F1" subIcon={<IconSunLow size={12} />} isPressed={p("F1")} isFnRow />
+        <Key code="F2" label="F2" subIcon={<IconSun size={12} />} isPressed={p("F2")} isFnRow />
+        <Key code="F3" label="F3" subIcon={<IconLayoutGrid size={12} />} isPressed={p("F3")} isFnRow />
+        <Key code="F4" label="F4" subIcon={<IconSearch size={12} />} isPressed={p("F4")} isFnRow />
+        <Key code="F5" label="F5" subIcon={<IconMicrophone size={12} />} isPressed={p("F5")} isFnRow />
+        <Key code="F6" label="F6" subIcon={<IconMoon size={12} />} isPressed={p("F6")} isFnRow />
+        <Key code="F7" label="F7" subIcon={<IconPlayerTrackPrev size={12} />} isPressed={p("F7")} isFnRow />
+        <Key code="F8" label="F8" subIcon={<IconPlayerPlay size={12} />} isPressed={p("F8")} isFnRow />
+        <Key code="F9" label="F9" subIcon={<IconPlayerTrackNext size={12} />} isPressed={p("F9")} isFnRow />
+        <Key code="F10" label="F10" subIcon={<IconVolume3 size={12} />} isPressed={p("F10")} isFnRow />
+        <Key code="F11" label="F11" subIcon={<IconVolume size={12} />} isPressed={p("F11")} isFnRow />
+        <Key code="F12" label="F12" subIcon={<IconVolume2 size={12} />} isPressed={p("F12")} isFnRow />
+        <Key code="Delete" label="" icon={<IconBrightnessUp size={14} />} isPressed={p("Delete")} isCorner="tr" isFnRow />
+      </div>
+
+      {/* Number Row */}
+      <div className="flex mb-[3px]" style={{ gap }}>
+        <Key code="Backquote" label="~" subLabel="`" isPressed={p("Backquote")} />
+        <Key code="Digit1" label="!" subLabel="1" isPressed={p("Digit1")} />
+        <Key code="Digit2" label="@" subLabel="2" isPressed={p("Digit2")} />
+        <Key code="Digit3" label="#" subLabel="3" isPressed={p("Digit3")} />
+        <Key code="Digit4" label="$" subLabel="4" isPressed={p("Digit4")} />
+        <Key code="Digit5" label="%" subLabel="5" isPressed={p("Digit5")} />
+        <Key code="Digit6" label="^" subLabel="6" isPressed={p("Digit6")} />
+        <Key code="Digit7" label="&" subLabel="7" isPressed={p("Digit7")} />
+        <Key code="Digit8" label="*" subLabel="8" isPressed={p("Digit8")} />
+        <Key code="Digit9" label="(" subLabel="9" isPressed={p("Digit9")} />
+        <Key code="Digit0" label=")" subLabel="0" isPressed={p("Digit0")} />
+        <Key code="Minus" label="_" subLabel="-" isPressed={p("Minus")} />
+        <Key code="Equal" label="+" subLabel="=" isPressed={p("Equal")} />
+        <Key code="Backspace" icon={<IconBackspace size={16} />} isPressed={p("Backspace")} width={1.52} />
+      </div>
+
+      {/* QWERTY Row */}
+      <div className="flex mb-[3px]" style={{ gap }}>
+        <Key code="Tab" label="tab" isPressed={p("Tab")} width={1.52} />
+        <Key code="KeyQ" label="Q" isPressed={p("KeyQ")} />
+        <Key code="KeyW" label="W" isPressed={p("KeyW")} />
+        <Key code="KeyE" label="E" isPressed={p("KeyE")} />
+        <Key code="KeyR" label="R" isPressed={p("KeyR")} />
+        <Key code="KeyT" label="T" isPressed={p("KeyT")} />
+        <Key code="KeyY" label="Y" isPressed={p("KeyY")} />
+        <Key code="KeyU" label="U" isPressed={p("KeyU")} />
+        <Key code="KeyI" label="I" isPressed={p("KeyI")} />
+        <Key code="KeyO" label="O" isPressed={p("KeyO")} />
+        <Key code="KeyP" label="P" isPressed={p("KeyP")} />
+        <Key code="BracketLeft" label="{" subLabel="[" isPressed={p("BracketLeft")} />
+        <Key code="BracketRight" label="}" subLabel="]" isPressed={p("BracketRight")} />
+        <Key code="Backslash" label="|" subLabel="\\" isPressed={p("Backslash")} />
+      </div>
+
+      {/* Home Row */}
+      <div className="flex mb-[3px]" style={{ gap }}>
+        <Key code="CapsLock" label="caps lock" isPressed={p("CapsLock")} width={1.85} />
+        <Key code="KeyA" label="A" isPressed={p("KeyA")} />
+        <Key code="KeyS" label="S" isPressed={p("KeyS")} />
+        <Key code="KeyD" label="D" isPressed={p("KeyD")} />
+        <Key code="KeyF" label="F" isPressed={p("KeyF")} />
+        <Key code="KeyG" label="G" isPressed={p("KeyG")} />
+        <Key code="KeyH" label="H" isPressed={p("KeyH")} />
+        <Key code="KeyJ" label="J" isPressed={p("KeyJ")} />
+        <Key code="KeyK" label="K" isPressed={p("KeyK")} />
+        <Key code="KeyL" label="L" isPressed={p("KeyL")} />
+        <Key code="Semicolon" label=":" subLabel=";" isPressed={p("Semicolon")} />
+        <Key code="Quote" label={'"'} subLabel="'" isPressed={p("Quote")} />
+        <Key code="Enter" label="" icon={<IconCornerDownLeft size={16} />} isPressed={p("Enter")} width={1.68} />
+      </div>
+
+      {/* Shift Row */}
+      <div className="flex mb-[3px]" style={{ gap }}>
+        <Key code="ShiftLeft" label="" icon={<IconArrowBigUp size={16} />} isPressed={p("ShiftLeft")} width={2.35} />
+        <Key code="KeyZ" label="Z" isPressed={p("KeyZ")} />
+        <Key code="KeyX" label="X" isPressed={p("KeyX")} />
+        <Key code="KeyC" label="C" isPressed={p("KeyC")} />
+        <Key code="KeyV" label="V" isPressed={p("KeyV")} />
+        <Key code="KeyB" label="B" isPressed={p("KeyB")} />
+        <Key code="KeyN" label="N" isPressed={p("KeyN")} />
+        <Key code="KeyM" label="M" isPressed={p("KeyM")} />
+        <Key code="Comma" label="<" subLabel="," isPressed={p("Comma")} />
+        <Key code="Period" label=">" subLabel="." isPressed={p("Period")} />
+        <Key code="Slash" label="?" subLabel="/" isPressed={p("Slash")} />
+        <Key code="ShiftRight" label="" icon={<IconArrowBigUp size={16} />} isPressed={p("ShiftRight")} width={2.35} />
+      </div>
+
+      {/* Bottom Row */}
+      <div className="flex" style={{ gap }}>
+        <Key code="Fn" label="fn" isPressed={p("Fn")} isCorner="bl" />
+        <Key code="ControlLeft" label="ctrl" isPressed={p("ControlLeft")} width={1.05} />
+        <Key code="AltLeft" label="opt" isPressed={p("AltLeft")} width={1.05} />
+        <Key code="MetaLeft" label="" icon={<IconCommand size={14} />} isPressed={p("MetaLeft")} width={1.3} />
+        <Key code="Space" label="" isPressed={p("Space")} width={5.65} />
+        <Key code="MetaRight" label="" icon={<IconCommand size={14} />} isPressed={p("MetaRight")} width={1.3} />
+        <Key code="AltRight" label="opt" isPressed={p("AltRight")} width={1.05} />
+        {/* Arrow cluster */}
+        <div className="flex flex-col" style={{ gap }}>
+          <Key code="ArrowUp" icon={<IconChevronUp size={12} />} isPressed={p("ArrowUp")} height={0.48} />
+          <div className="flex" style={{ gap }}>
+            <Key code="ArrowLeft" icon={<IconChevronLeft size={12} />} isPressed={p("ArrowLeft")} height={0.48} isCorner="bl" />
+            <Key code="ArrowDown" icon={<IconChevronDown size={12} />} isPressed={p("ArrowDown")} height={0.48} />
+            <Key code="ArrowRight" icon={<IconChevronRight size={12} />} isPressed={p("ArrowRight")} height={0.48} isCorner="br" />
           </div>
-        );
-      })}
+        </div>
+      </div>
     </div>
   );
 }
