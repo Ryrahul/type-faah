@@ -1,3 +1,5 @@
+export type WordMode = "normal" | "curse";
+
 export const commonWords = [
   "the", "be", "to", "of", "and", "a", "in", "that", "have", "I",
   "it", "for", "not", "on", "with", "he", "as", "you", "do", "at",
@@ -48,11 +50,41 @@ export const commonWords = [
   "beautiful", "program", "minute", "finger", "natural", "hundred"
 ];
 
-export function generateWords(count: number): string[] {
+export const curseWords = [
+  // English
+  "fuck", "shit", "damn", "ass", "bitch", "bastard", "crap", "dick",
+  "piss", "hell", "douche", "moron", "idiot", "dumbass", "jackass",
+  "asshole", "bullshit", "motherfucker", "fucker", "shithead",
+  "dipshit", "dickhead", "cunt", "twat", "wanker", "prick",
+  "scumbag", "douchebag", "nutjob", "bonehead", "nitwit", "dimwit",
+  "halfwit", "blockhead", "knucklehead", "schmuck", "putz",
+  "jerk", "loser", "clown", "fool", "buffoon", "dunce",
+  "bloody", "bugger", "bollocks", "tosser", "pillock", "plonker",
+  "muppet", "numpty", "bellend", "git", "sod", "arse",
+  // Hindi (romanized)
+  "chutiya", "madarchod", "behenchod", "bhosdike", "gaandu",
+  "harami", "kameena", "saala", "kutte", "gadhe",
+  "ullu", "bewakoof", "pagal", "chapri", "jhandu",
+  "tatti", "gandu", "chodu", "lavde", "bhosdi",
+  "randi", "haramkhor", "nalayak", "nikamma", "gadha",
+  "bakchod", "chirkut", "fattu", "lukkha", "lafanga",
+  "tapori", "ghatiya", "bekaar", "wahiyat", "bakwas",
+  "chutiyon", "kamina", "badtameez", "zaleel", "neech",
+  "gandmasti", "bhenchod", "laudu", "jhatu", "chakka",
+  "panauti", "duffer", "lodu", "bhadwa", "raand",
+  "tharki", "chamcha", "gulel", "dhakkan", "phattu",
+  // Mixed fun phrases (typed as single words)
+  "wtf", "lmao", "stfu", "gtfo", "smh", "bruh", "fml",
+  "yolo", "noob", "trash", "toxic", "salty", "tryhard",
+  "rage", "tilt", "copium", "ratio", "cringe", "boomer",
+];
+
+export function generateWords(count: number, mode: WordMode = "normal"): string[] {
+  const source = mode === "curse" ? curseWords : commonWords;
   const words: string[] = [];
   for (let i = 0; i < count; i++) {
-    const randomIndex = Math.floor(Math.random() * commonWords.length);
-    words.push(commonWords[randomIndex]);
+    const randomIndex = Math.floor(Math.random() * source.length);
+    words.push(source[randomIndex]);
   }
   return words;
 }

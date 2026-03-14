@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import type { SoundProfile } from "../lib/sounds";
+import type { WordMode } from "../lib/words";
 
 const themes = [
   { id: "default", color: "#a7c4a0", label: "Sage" },
@@ -46,6 +47,8 @@ interface HeaderProps {
   mistakeThreshold2: number;
   onMistakeThreshold1Change: (v: number) => void;
   onMistakeThreshold2Change: (v: number) => void;
+  wordMode: WordMode;
+  onWordModeChange: (mode: WordMode) => void;
 }
 
 export default function Header({
@@ -62,6 +65,8 @@ export default function Header({
   mistakeThreshold2,
   onMistakeThreshold1Change,
   onMistakeThreshold2Change,
+  wordMode,
+  onWordModeChange,
 }: HeaderProps) {
   const [showSoundMenu, setShowSoundMenu] = useState(false);
 
@@ -112,6 +117,41 @@ export default function Header({
                 }}
                 title={theme.label}
               />
+            ))}
+          </div>
+
+          {/* Word mode toggle */}
+          <div
+            className="flex items-center rounded-full"
+            style={{
+              backgroundColor: "var(--bg-secondary)",
+              padding: "4px 5px",
+              gap: "2px",
+            }}
+          >
+            {(["normal", "curse"] as WordMode[]).map((mode) => (
+              <button
+                key={mode}
+                onClick={() => !isRunning && onWordModeChange(mode)}
+                className="transition-all duration-200"
+                style={{
+                  padding: "5px 14px",
+                  borderRadius: "20px",
+                  fontSize: "12px",
+                  fontWeight: 500,
+                  backgroundColor:
+                    wordMode === mode ? "var(--bg-card)" : "transparent",
+                  color:
+                    wordMode === mode ? "var(--accent)" : "var(--text-dim)",
+                  boxShadow:
+                    wordMode === mode ? "0 1px 4px rgba(0,0,0,0.3)" : "none",
+                  opacity: isRunning && wordMode !== mode ? 0.4 : 1,
+                  cursor: isRunning ? "default" : "pointer",
+                }}
+                disabled={isRunning}
+              >
+                {mode === "normal" ? "Normal" : "18+"}
+              </button>
             ))}
           </div>
 

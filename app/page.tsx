@@ -6,6 +6,7 @@ import TypingArea from "./components/TypingArea";
 import Keyboard from "./components/Keyboard";
 import Results from "./components/Results";
 import { generateWords } from "./lib/words";
+import type { WordMode } from "./lib/words";
 import { playKeySound, playSpaceSound, playCompleteSound, playMistakeSound } from "./lib/sounds";
 import type { SoundProfile } from "./lib/sounds";
 
@@ -24,10 +25,11 @@ export default function Home() {
   const [soundProfile, setSoundProfile] = useState<SoundProfile>("thock");
   const [mistakeThreshold1, setMistakeThreshold1] = useState(5);
   const [mistakeThreshold2, setMistakeThreshold2] = useState(10);
+  const [wordMode, setWordMode] = useState<WordMode>("normal");
 
   // Game state
   const [gameState, setGameState] = useState<GameState>("idle");
-  const [words, setWords] = useState<string[]>(() => generateWords(200));
+  const [words, setWords] = useState<string[]>(() => generateWords(200, "normal"));
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [currentCharIndex, setCurrentCharIndex] = useState(0);
   const [typedChars, setTypedChars] = useState<TypedChar[][]>([]);
@@ -59,6 +61,8 @@ export default function Home() {
   mt1Ref.current = mistakeThreshold1;
   const mt2Ref = useRef(mistakeThreshold2);
   mt2Ref.current = mistakeThreshold2;
+  const wordModeRef = useRef(wordMode);
+  wordModeRef.current = wordMode;
 
   // Live WPM calculation
   useEffect(() => {
@@ -132,7 +136,7 @@ export default function Home() {
 
   const restartGame = useCallback(() => {
     setGameState("idle");
-    setWords(generateWords(200));
+    setWords(generateWords(200, wordModeRef.current));
     setCurrentWordIndex(0);
     setCurrentCharIndex(0);
     setTypedChars([]);
@@ -211,7 +215,7 @@ export default function Home() {
         setTotalCharsTyped((prev) => prev + 1);
 
         if (currentWordIndex >= words.length - 20) {
-          setWords((prev) => [...prev, ...generateWords(100)]);
+          setWords((prev) => [...prev, ...generateWords(100, wordModeRef.current)]);
         }
         return;
       }
@@ -362,6 +366,12 @@ export default function Home() {
         mistakeThreshold2={mistakeThreshold2}
         onMistakeThreshold1Change={setMistakeThreshold1}
         onMistakeThreshold2Change={setMistakeThreshold2}
+        wordMode={wordMode}
+        onWordModeChange={(mode) => {
+          setWordMode(mode);
+          setWords(generateWords(200, mode));
+          restartGame();
+        }}
       />
 
       <main className="flex-1 flex flex-col items-center justify-center px-8">
