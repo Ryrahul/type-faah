@@ -21,7 +21,7 @@ export default function Home() {
   const [theme, setTheme] = useState("default");
   const [timerDuration, setTimerDuration] = useState(30);
   const [soundEnabled, setSoundEnabled] = useState(true);
-  const [soundProfile, setSoundProfile] = useState<SoundProfile>("lubed");
+  const [soundProfile, setSoundProfile] = useState<SoundProfile>("thock");
 
   // Game state
   const [gameState, setGameState] = useState<GameState>("idle");
@@ -165,14 +165,7 @@ export default function Home() {
         return;
       }
 
-      // Allow Enter or any key to restart from finished state
-      if (gameState === "finished") {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          restartGame();
-        }
-        return;
-      }
+      if (gameState === "finished") return;
       if (!isFocused) {
         setIsFocused(true);
         inputRef.current?.focus();

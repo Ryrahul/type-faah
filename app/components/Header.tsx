@@ -15,12 +15,16 @@ const themes = [
 const timerOptions = [15, 30, 60, 120];
 
 const soundProfiles: { id: SoundProfile; label: string }[] = [
-  { id: "lubed", label: "Lubed Linears" },
-  { id: "blue", label: "Cherry Blue" },
-  { id: "brown", label: "Cherry Brown" },
-  { id: "red", label: "Cherry Red" },
-  { id: "topre", label: "Topre" },
-  { id: "membrane", label: "Membrane" },
+  { id: "thock", label: "Thock" },
+  { id: "clack", label: "Clack" },
+  { id: "creamy", label: "Creamy" },
+  { id: "marbly", label: "Marbly" },
+  { id: "poppy", label: "Poppy" },
+  { id: "rainy", label: "Rainy" },
+  { id: "muted", label: "Muted" },
+  { id: "typewriter", label: "Typewriter" },
+  { id: "asmr", label: "ASMR Typing" },
+  { id: "bubble", label: "Bubble" },
 ];
 
 interface HeaderProps {
