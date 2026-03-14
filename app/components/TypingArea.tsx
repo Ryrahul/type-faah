@@ -30,7 +30,7 @@ export default function TypingArea({
   const containerRef = useRef<HTMLDivElement>(null);
   const activeWordRef = useRef<HTMLSpanElement>(null);
 
-  // Scroll to keep active word visible
+  // Smooth scroll to keep active word visible
   useEffect(() => {
     if (activeWordRef.current && containerRef.current) {
       const wordEl = activeWordRef.current;
@@ -39,9 +39,9 @@ export default function TypingArea({
       const containerScroll = containerEl.scrollTop;
       const containerHeight = containerEl.clientHeight;
 
-      if (wordTop > containerScroll + containerHeight - 50) {
+      if (wordTop > containerScroll + containerHeight - 60) {
         containerEl.scrollTo({
-          top: wordTop - 20,
+          top: wordTop - 30,
           behavior: "smooth",
         });
       }
@@ -49,23 +49,23 @@ export default function TypingArea({
   }, [currentWordIndex]);
 
   const visibleRange = useMemo(() => {
-    const start = Math.max(0, currentWordIndex - 40);
-    const end = Math.min(words.length, currentWordIndex + 80);
+    const start = Math.max(0, currentWordIndex - 30);
+    const end = Math.min(words.length, currentWordIndex + 60);
     return { start, end };
   }, [currentWordIndex, words.length]);
 
   return (
-    <div className="relative w-full max-w-[860px] mx-auto">
+    <div className="relative w-full max-w-[920px] mx-auto">
       {/* Timer + Live WPM display */}
-      <div className="flex items-baseline gap-5 mb-8 min-h-[60px]">
+      <div className="flex items-baseline gap-5 mb-10 min-h-[64px]">
         {timerDuration > 0 && (
           <div
-            className="text-5xl font-extralight tracking-tight tabular-nums min-w-[80px]"
+            className="text-6xl font-extralight tracking-tight tabular-nums min-w-[90px]"
             style={{
               color: "var(--accent)",
               fontFamily: "var(--font-geist-mono)",
-              opacity: isRunning ? 1 : 0.4,
-              transition: "opacity 0.3s ease",
+              opacity: isRunning ? 1 : 0.35,
+              transition: "opacity 0.5s ease",
             }}
           >
             {timeLeft !== null ? timeLeft : timerDuration}
@@ -73,25 +73,25 @@ export default function TypingArea({
         )}
         {/* Always reserve space for WPM to avoid layout shift */}
         <div
-          className="flex items-baseline gap-1.5 min-w-[70px]"
+          className="flex items-baseline gap-1.5 min-w-[80px]"
           style={{
-            opacity: isRunning && liveWpm > 0 ? 0.45 : 0,
-            transition: "opacity 0.6s ease",
+            opacity: isRunning && liveWpm > 0 ? 0.4 : 0,
+            transition: "opacity 0.8s ease",
           }}
         >
           <span
-            className="text-2xl font-extralight tabular-nums"
+            className="text-3xl font-extralight tabular-nums"
             style={{
               color: "var(--text)",
               fontFamily: "var(--font-geist-mono)",
-              minWidth: "40px",
+              minWidth: "48px",
               display: "inline-block",
             }}
           >
             {liveWpm}
           </span>
           <span
-            className="text-[10px] uppercase tracking-[0.15em]"
+            className="text-[11px] uppercase tracking-[0.2em] font-medium"
             style={{ color: "var(--text-dim)" }}
           >
             wpm
@@ -99,24 +99,25 @@ export default function TypingArea({
         </div>
       </div>
 
-      {/* Typing area - no top fade, only bottom fade */}
+      {/* Typing area */}
       <div
         ref={containerRef}
         onClick={onFocus}
-        className="relative h-[140px] overflow-hidden cursor-text select-none"
+        className="relative h-[160px] overflow-hidden cursor-text select-none"
         style={{
           maskImage:
-            "linear-gradient(to bottom, black 0%, black 70%, transparent 100%)",
+            "linear-gradient(to bottom, black 0%, black 65%, transparent 100%)",
           WebkitMaskImage:
-            "linear-gradient(to bottom, black 0%, black 70%, transparent 100%)",
+            "linear-gradient(to bottom, black 0%, black 65%, transparent 100%)",
         }}
       >
         <div
-          className="flex flex-wrap gap-x-[10px] gap-y-[8px] leading-[1.7]"
+          className="flex flex-wrap gap-x-[14px] gap-y-[10px]"
           style={{
-            fontSize: "22px",
+            fontSize: "28px",
             fontFamily: "var(--font-geist-mono)",
-            letterSpacing: "0.02em",
+            letterSpacing: "0.01em",
+            lineHeight: "1.8",
           }}
         >
           {words.slice(visibleRange.start, visibleRange.end).map((word, idx) => {
@@ -157,7 +158,7 @@ export default function TypingArea({
                     <span key={charIdx} className="relative inline-block">
                       {showCursor && (
                         <span
-                          className="absolute left-0 top-[2px] bottom-[2px] w-[2.5px] cursor-blink rounded-full -translate-x-[1px]"
+                          className="absolute left-0 top-[4px] bottom-[4px] w-[3px] cursor-blink rounded-full -translate-x-[1px]"
                           style={{ backgroundColor: "var(--cursor)" }}
                         />
                       )}
@@ -166,9 +167,9 @@ export default function TypingArea({
                           color,
                           textDecoration,
                           textDecorationColor: "var(--text-error)",
-                          textUnderlineOffset: "5px",
-                          textDecorationThickness: "2px",
-                          transition: "color 0.15s ease",
+                          textUnderlineOffset: "6px",
+                          textDecorationThickness: "2.5px",
+                          transition: "color 0.12s ease",
                         }}
                       >
                         {char}
@@ -184,8 +185,8 @@ export default function TypingArea({
                       color: "var(--text-error)",
                       textDecoration: "underline",
                       textDecorationColor: "var(--text-error)",
-                      textUnderlineOffset: "5px",
-                      textDecorationThickness: "2px",
+                      textUnderlineOffset: "6px",
+                      textDecorationThickness: "2.5px",
                       opacity: 0.8,
                     }}
                   >
@@ -198,7 +199,7 @@ export default function TypingArea({
                   currentCharIndex >= word.length &&
                   currentCharIndex === wordTyped.length && (
                     <span
-                      className="absolute top-[2px] bottom-[2px] w-[2.5px] cursor-blink rounded-full"
+                      className="absolute top-[4px] bottom-[4px] w-[3px] cursor-blink rounded-full"
                       style={{
                         backgroundColor: "var(--cursor)",
                         right: "-2px",
@@ -217,17 +218,17 @@ export default function TypingArea({
           className="absolute inset-0 flex items-center justify-center rounded-2xl cursor-pointer"
           onClick={onFocus}
           style={{
-            backgroundColor: "rgba(0,0,0,0.25)",
-            backdropFilter: "blur(5px)",
-            WebkitBackdropFilter: "blur(5px)",
+            backgroundColor: "rgba(0,0,0,0.3)",
+            backdropFilter: "blur(6px)",
+            WebkitBackdropFilter: "blur(6px)",
           }}
         >
           <div
-            className="px-6 py-3 rounded-xl text-sm font-medium focus-pulse"
+            className="px-7 py-3.5 rounded-xl text-[13px] font-medium tracking-wide focus-pulse"
             style={{
               border: "1px solid var(--border)",
               color: "var(--text-dim)",
-              backgroundColor: "rgba(0,0,0,0.3)",
+              backgroundColor: "rgba(0,0,0,0.35)",
             }}
           >
             click or press any key to focus
@@ -237,10 +238,10 @@ export default function TypingArea({
 
       {/* Restart hint */}
       <div
-        className="flex items-center justify-center gap-2 mt-8 text-sm transition-opacity duration-300"
+        className="flex items-center justify-center gap-2.5 mt-8 text-[13px] transition-opacity duration-500"
         style={{
           color: "var(--text-dim)",
-          opacity: isRunning ? 0.5 : 0,
+          opacity: isRunning ? 0.4 : 0,
         }}
       >
         <svg
@@ -255,7 +256,7 @@ export default function TypingArea({
         >
           <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" />
         </svg>
-        <span className="tracking-wide">tab+enter or cmd+enter to restart</span>
+        <span className="tracking-wider">tab+enter or cmd+enter to restart</span>
       </div>
     </div>
   );

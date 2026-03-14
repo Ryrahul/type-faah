@@ -10,6 +10,7 @@ interface KeyConfig {
   key: string;
   label?: string;
   subLabel?: string;
+  subIcon?: string;
   width?: number;
 }
 
@@ -17,18 +18,18 @@ const keyboardRows: KeyConfig[][] = [
   // Function row
   [
     { key: "Escape", label: "esc", width: 1.1 },
-    { key: "F1", label: "F1" },
-    { key: "F2", label: "F2" },
-    { key: "F3", label: "F3" },
-    { key: "F4", label: "F4" },
-    { key: "F5", label: "F5" },
-    { key: "F6", label: "F6" },
-    { key: "F7", label: "F7" },
-    { key: "F8", label: "F8" },
-    { key: "F9", label: "F9" },
-    { key: "F10", label: "F10" },
-    { key: "F11", label: "F11" },
-    { key: "F12", label: "F12" },
+    { key: "F1", subIcon: "\u2600", label: "F1" },
+    { key: "F2", subIcon: "\u2600", label: "F2" },
+    { key: "F3", subIcon: "\u2395", label: "F3" },
+    { key: "F4", subIcon: "\u2315", label: "F4" },
+    { key: "F5", subIcon: "\u266A", label: "F5" },
+    { key: "F6", subIcon: "\u263D", label: "F6" },
+    { key: "F7", subIcon: "\u23EA", label: "F7" },
+    { key: "F8", subIcon: "\u23EF", label: "F8" },
+    { key: "F9", subIcon: "\u23E9", label: "F9" },
+    { key: "F10", subIcon: "\u266A", label: "F10" },
+    { key: "F11", subIcon: "\u266A", label: "F11" },
+    { key: "F12", subIcon: "\u266B", label: "F12" },
     { key: "Delete", label: "del" },
   ],
   // Number row
@@ -108,24 +109,22 @@ const keyboardRows: KeyConfig[][] = [
   ],
 ];
 
-// Side labels keyed by row index (1-indexed since fn row = 0 has none)
+// Side labels
 const sideLabelsMap: Record<number, string> = {
-  1: "",
   2: "pgup",
   3: "pgdn",
-  4: "",
   5: "home",
   6: "end",
 };
 
-// Keys that get accent color styling
+// Accent colored modifier keys
 const accentKeys = new Set([
   "Escape", "Tab", "CapsLock", "ShiftLeft", "ShiftRight", "Enter",
   "ControlLeft", "ControlRight", "AltLeft", "AltRight",
   "MetaLeft", "MetaRight", "Fn",
 ]);
 
-// Keys that get alt color styling
+// Muted alt-colored keys
 const altKeys = new Set([
   "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12",
   "Delete", "Backspace",
@@ -141,53 +140,61 @@ function getKeyStyle(keyCode: string, isPressed: boolean) {
   let bg = "var(--key-bg)";
   if (isAccent) bg = "var(--key-bg-accent)";
   else if (isAlt) bg = "var(--key-bg-alt)";
-
   if (isPressed) bg = "var(--key-active)";
 
   return {
     backgroundColor: bg,
     color: "var(--key-text)",
     boxShadow: isPressed
-      ? "0 1px 0 var(--key-shadow), inset 0 0 0 1px rgba(0,0,0,0.05)"
-      : "0 2px 0 var(--key-shadow), 0 3px 4px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.4)",
-    transform: isPressed ? "translateY(2px)" : "translateY(0)",
-    transition: "all 0.06s ease-out",
+      ? `0 1px 0 0 var(--key-shadow),
+         inset 0 1px 2px rgba(0,0,0,0.1)`
+      : `0 4px 0 0 var(--key-shadow),
+         0 6px 10px rgba(0,0,0,0.15),
+         inset 0 1px 0 rgba(255,255,255,0.5),
+         inset 0 -1px 0 rgba(0,0,0,0.08)`,
+    transform: isPressed ? "translateY(3px)" : "translateY(0)",
+    transition: "transform 0.05s ease-out, box-shadow 0.05s ease-out, background-color 0.05s ease-out",
   };
 }
 
-const GAP = 4;
-const BASE = 66;
+// Key size constants
+const GAP = 5;
+const BASE = 70;
 
 export default function Keyboard({ pressedKeys }: KeyboardProps) {
   return (
     <div
-      className="mx-auto rounded-2xl"
+      className="mx-auto"
       style={{
         width: "fit-content",
-        padding: "14px 20px 18px 20px",
+        padding: "18px 24px 24px 24px",
+        borderRadius: "18px",
         background:
-          "linear-gradient(180deg, var(--bg-secondary) 0%, color-mix(in srgb, var(--bg-secondary) 60%, var(--bg) 40%) 100%)",
+          "linear-gradient(170deg, color-mix(in srgb, var(--bg-secondary) 90%, white 10%) 0%, var(--bg-secondary) 40%, color-mix(in srgb, var(--bg-secondary) 85%, black 15%) 100%)",
         boxShadow:
-          "0 8px 32px rgba(0,0,0,0.35), 0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)",
-        border: "1px solid rgba(255,255,255,0.04)",
+          `0 20px 60px rgba(0,0,0,0.4),
+           0 4px 12px rgba(0,0,0,0.25),
+           inset 0 1px 0 rgba(255,255,255,0.08),
+           inset 0 -1px 0 rgba(0,0,0,0.2)`,
+        border: "1px solid rgba(255,255,255,0.06)",
       }}
     >
       {keyboardRows.map((row, rowIdx) => {
         const isFnRow = rowIdx === 0;
-        const sideLabel = rowIdx > 0 ? sideLabelsMap[rowIdx] : undefined;
+        const sideLabel = sideLabelsMap[rowIdx];
 
         return (
           <div
             key={rowIdx}
-            className={`flex items-center ${isFnRow ? "mb-[6px]" : rowIdx < keyboardRows.length - 1 ? "mb-[4px]" : ""}`}
+            className={`flex items-center ${isFnRow ? "mb-[8px]" : rowIdx < keyboardRows.length - 1 ? "mb-[5px]" : ""}`}
           >
-            {/* Keys container */}
+            {/* Keys */}
             <div className="flex" style={{ gap: `${GAP}px` }}>
               {row.map((keyConfig) => {
                 const isPressed = pressedKeys.has(keyConfig.key);
                 const w = keyConfig.width || 1;
                 const keyWidth = BASE * w + GAP * (w - 1);
-                const keyHeight = isFnRow ? 34 : 48;
+                const keyHeight = isFnRow ? 38 : 52;
 
                 return (
                   <div
@@ -197,27 +204,36 @@ export default function Keyboard({ pressedKeys }: KeyboardProps) {
                       ...getKeyStyle(keyConfig.key, isPressed),
                       width: `${keyWidth}px`,
                       height: `${keyHeight}px`,
-                      borderRadius: "7px",
+                      borderRadius: "10px",
                       flexShrink: 0,
                     }}
                   >
                     {keyConfig.subLabel ? (
                       <div className="flex flex-col items-center gap-[2px]">
-                        <span className="text-[9px] opacity-50 leading-none">
+                        <span className="text-[9px] opacity-45 leading-none">
                           {keyConfig.label}
                         </span>
-                        <span className="text-[13px] font-semibold leading-none">
+                        <span className="text-[14px] font-semibold leading-none">
                           {keyConfig.subLabel}
+                        </span>
+                      </div>
+                    ) : isFnRow && keyConfig.subIcon ? (
+                      <div className="flex flex-col items-center gap-[3px]">
+                        <span className="text-[10px] opacity-40 leading-none">
+                          {keyConfig.subIcon}
+                        </span>
+                        <span className="text-[10px] font-medium leading-none opacity-70">
+                          {keyConfig.label}
                         </span>
                       </div>
                     ) : (
                       <span
                         className={`${
                           w > 1.3
-                            ? "text-[10px] tracking-wide"
+                            ? "text-[11px] tracking-wide"
                             : isFnRow
                             ? "text-[10px]"
-                            : "text-[14px] font-semibold"
+                            : "text-[15px] font-semibold"
                         }`}
                       >
                         {keyConfig.label}
@@ -228,15 +244,15 @@ export default function Keyboard({ pressedKeys }: KeyboardProps) {
               })}
             </div>
 
-            {/* Side label column - always present for non-fn rows to keep alignment */}
+            {/* Side label column */}
             {rowIdx > 0 && (
               <div
-                className="text-[9px] font-medium tracking-wider text-center select-none flex-shrink-0"
+                className="text-[9px] font-medium tracking-[0.15em] text-center select-none flex-shrink-0"
                 style={{
                   color: "var(--text-dim)",
-                  opacity: sideLabel ? 0.4 : 0,
-                  width: "48px",
-                  marginLeft: "8px",
+                  opacity: sideLabel ? 0.35 : 0,
+                  width: "52px",
+                  marginLeft: "10px",
                 }}
               >
                 {sideLabel || "\u00A0"}

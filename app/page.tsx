@@ -369,9 +369,9 @@ export default function Home() {
         )}
       </main>
 
-      {/* Keyboard - centered at bottom */}
+      {/* Keyboard - centered at bottom with breathing room */}
       {gameState !== "finished" && (
-        <footer className="pb-4 pt-2 flex justify-center overflow-x-auto">
+        <footer className="pb-6 pt-4 flex justify-center overflow-x-auto">
           <Keyboard pressedKeys={pressedKeys} />
         </footer>
       )}

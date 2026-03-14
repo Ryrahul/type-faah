@@ -155,27 +155,14 @@ body {
   border-radius: 3px;
 }
 
-/* Cursor blink animation */
+/* Cursor blink animation - smooth and gentle */
 @keyframes blink {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+  50% { opacity: 0.15; }
 }
 
 .cursor-blink {
-  animation: blink 1s ease-in-out infinite;
-}
-
-/* Key press animation */
-@keyframes keyPress {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(2px); }
-  100% { transform: translateY(0); }
-}
-
-.key-pressed {
-  animation: keyPress 0.1s ease-out;
-  transform: translateY(2px);
-  box-shadow: 0 1px 0 var(--key-shadow) !important;
+  animation: blink 1.1s ease-in-out infinite;
 }
 
 /* Smooth transitions for theme changes */
