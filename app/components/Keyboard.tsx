@@ -79,11 +79,11 @@ const keyboardRows: KeyConfig[][] = [
     { key: "KeyL", label: "L" },
     { key: "Semicolon", label: ":", subLabel: ";" },
     { key: "Quote", label: '"', subLabel: "'" },
-    { key: "Enter", label: "return", width: 1.8 },
+    { key: "Enter", label: "return", width: 1.7 },
   ],
   // Bottom row
   [
-    { key: "ShiftLeft", label: "shift", width: 2.3 },
+    { key: "ShiftLeft", label: "shift", width: 2.25 },
     { key: "KeyZ", label: "Z" },
     { key: "KeyX", label: "X" },
     { key: "KeyC", label: "C" },
@@ -94,38 +94,35 @@ const keyboardRows: KeyConfig[][] = [
     { key: "Comma", label: "<", subLabel: "," },
     { key: "Period", label: ">", subLabel: "." },
     { key: "Slash", label: "?", subLabel: "/" },
-    { key: "ShiftRight", label: "shift", width: 2.3 },
+    { key: "ShiftRight", label: "shift", width: 2.25 },
   ],
   // Space row
   [
     { key: "Fn", label: "fn", width: 1 },
-    { key: "ControlLeft", label: "ctrl", width: 1.2 },
-    { key: "AltLeft", label: "opt", width: 1.2 },
+    { key: "ControlLeft", label: "ctrl", width: 1.25 },
+    { key: "AltLeft", label: "opt", width: 1.25 },
     { key: "MetaLeft", label: "cmd", width: 1.5 },
-    { key: "Space", label: "", width: 5.8 },
+    { key: "Space", label: "", width: 5.5 },
     { key: "MetaRight", label: "cmd", width: 1.5 },
-    { key: "AltRight", label: "opt", width: 1.2 },
+    { key: "AltRight", label: "opt", width: 1.25 },
   ],
 ];
 
-// Side column labels (pgup, pgdn, home, end)
-const sideLabels = ["", "pgup", "pgdn", "", "home", "end"];
+// Side labels keyed by row index (1-indexed since fn row = 0 has none)
+const sideLabelsMap: Record<number, string> = {
+  1: "",
+  2: "pgup",
+  3: "pgdn",
+  4: "",
+  5: "home",
+  6: "end",
+};
 
 // Keys that get accent color styling
 const accentKeys = new Set([
-  "Escape",
-  "Tab",
-  "CapsLock",
-  "ShiftLeft",
-  "ShiftRight",
-  "Enter",
-  "ControlLeft",
-  "ControlRight",
-  "AltLeft",
-  "AltRight",
-  "MetaLeft",
-  "MetaRight",
-  "Fn",
+  "Escape", "Tab", "CapsLock", "ShiftLeft", "ShiftRight", "Enter",
+  "ControlLeft", "ControlRight", "AltLeft", "AltRight",
+  "MetaLeft", "MetaRight", "Fn",
 ]);
 
 // Keys that get alt color styling
@@ -158,79 +155,96 @@ function getKeyStyle(keyCode: string, isPressed: boolean) {
   };
 }
 
+const GAP = 4;
+const BASE = 66;
+
 export default function Keyboard({ pressedKeys }: KeyboardProps) {
   return (
     <div
-      className="w-full max-w-[960px] mx-auto rounded-2xl p-4 pt-3 pb-5"
+      className="mx-auto rounded-2xl"
       style={{
-        background: "linear-gradient(180deg, var(--bg-secondary) 0%, color-mix(in srgb, var(--bg-secondary) 60%, var(--bg) 40%) 100%)",
+        width: "fit-content",
+        padding: "14px 20px 18px 20px",
+        background:
+          "linear-gradient(180deg, var(--bg-secondary) 0%, color-mix(in srgb, var(--bg-secondary) 60%, var(--bg) 40%) 100%)",
         boxShadow:
           "0 8px 32px rgba(0,0,0,0.35), 0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)",
         border: "1px solid rgba(255,255,255,0.04)",
       }}
     >
-      {keyboardRows.map((row, rowIdx) => (
-        <div
-          key={rowIdx}
-          className={`flex gap-[3px] justify-center items-center ${rowIdx === 0 ? "mb-2" : "mb-[3px]"}`}
-        >
-          {row.map((keyConfig) => {
-            const isPressed = pressedKeys.has(keyConfig.key);
-            const width = keyConfig.width || 1;
-            const baseWidth = 54;
-            const isFnRow = rowIdx === 0;
+      {keyboardRows.map((row, rowIdx) => {
+        const isFnRow = rowIdx === 0;
+        const sideLabel = rowIdx > 0 ? sideLabelsMap[rowIdx] : undefined;
 
-            return (
+        return (
+          <div
+            key={rowIdx}
+            className={`flex items-center ${isFnRow ? "mb-[6px]" : rowIdx < keyboardRows.length - 1 ? "mb-[4px]" : ""}`}
+          >
+            {/* Keys container */}
+            <div className="flex" style={{ gap: `${GAP}px` }}>
+              {row.map((keyConfig) => {
+                const isPressed = pressedKeys.has(keyConfig.key);
+                const w = keyConfig.width || 1;
+                const keyWidth = BASE * w + GAP * (w - 1);
+                const keyHeight = isFnRow ? 34 : 48;
+
+                return (
+                  <div
+                    key={keyConfig.key}
+                    className="flex flex-col items-center justify-center font-medium select-none cursor-default"
+                    style={{
+                      ...getKeyStyle(keyConfig.key, isPressed),
+                      width: `${keyWidth}px`,
+                      height: `${keyHeight}px`,
+                      borderRadius: "7px",
+                      flexShrink: 0,
+                    }}
+                  >
+                    {keyConfig.subLabel ? (
+                      <div className="flex flex-col items-center gap-[2px]">
+                        <span className="text-[9px] opacity-50 leading-none">
+                          {keyConfig.label}
+                        </span>
+                        <span className="text-[13px] font-semibold leading-none">
+                          {keyConfig.subLabel}
+                        </span>
+                      </div>
+                    ) : (
+                      <span
+                        className={`${
+                          w > 1.3
+                            ? "text-[10px] tracking-wide"
+                            : isFnRow
+                            ? "text-[10px]"
+                            : "text-[14px] font-semibold"
+                        }`}
+                      >
+                        {keyConfig.label}
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Side label column - always present for non-fn rows to keep alignment */}
+            {rowIdx > 0 && (
               <div
-                key={keyConfig.key}
-                className="rounded-[6px] flex flex-col items-center justify-center font-medium select-none cursor-default"
+                className="text-[9px] font-medium tracking-wider text-center select-none flex-shrink-0"
                 style={{
-                  ...getKeyStyle(keyConfig.key, isPressed),
-                  width: `${baseWidth * width + (width - 1) * 3}px`,
-                  height: isFnRow ? "32px" : "44px",
-                  borderRadius: "7px",
+                  color: "var(--text-dim)",
+                  opacity: sideLabel ? 0.4 : 0,
+                  width: "48px",
+                  marginLeft: "8px",
                 }}
               >
-                {keyConfig.subLabel ? (
-                  <div className="flex flex-col items-center gap-[2px]">
-                    <span className="text-[9px] opacity-50 leading-none">
-                      {keyConfig.label}
-                    </span>
-                    <span className="text-[12px] font-semibold leading-none">
-                      {keyConfig.subLabel}
-                    </span>
-                  </div>
-                ) : (
-                  <span
-                    className={`${
-                      width > 1.3
-                        ? "text-[10px] tracking-wide"
-                        : isFnRow
-                        ? "text-[10px]"
-                        : "text-[13px] font-semibold"
-                    }`}
-                  >
-                    {keyConfig.label}
-                  </span>
-                )}
+                {sideLabel || "\u00A0"}
               </div>
-            );
-          })}
-
-          {/* Side label */}
-          {rowIdx > 0 && sideLabels[rowIdx - 1] && (
-            <div
-              className="ml-2 text-[9px] font-medium tracking-wider w-10 text-center select-none"
-              style={{ color: "var(--text-dim)", opacity: 0.5 }}
-            >
-              {sideLabels[rowIdx - 1]}
-            </div>
-          )}
-          {rowIdx > 0 && !sideLabels[rowIdx - 1] && (
-            <div className="ml-2 w-10" />
-          )}
-        </div>
-      ))}
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }

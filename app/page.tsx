@@ -45,8 +45,10 @@ export default function Home() {
   const inputRef = useRef<HTMLInputElement>(null);
   const soundEnabledRef = useRef(soundEnabled);
   soundEnabledRef.current = soundEnabled;
+  const correctCharsRef = useRef(correctChars);
+  correctCharsRef.current = correctChars;
 
-  // Live WPM calculation
+  // Live WPM calculation - uses refs to avoid re-creating interval on every keystroke
   useEffect(() => {
     if (gameState !== "running" || !startTime) {
       setLiveWpm(0);
@@ -57,12 +59,12 @@ export default function Home() {
       const elapsed = (Date.now() - startTime) / 1000;
       const minutes = elapsed / 60;
       if (minutes > 0) {
-        setLiveWpm(Math.round(correctChars / 5 / minutes));
+        setLiveWpm(Math.round(correctCharsRef.current / 5 / minutes));
       }
-    }, 500);
+    }, 1000);
 
     return () => clearInterval(wpmInterval);
-  }, [gameState, startTime, correctChars]);
+  }, [gameState, startTime]);
 
   // Apply theme
   useEffect(() => {
@@ -348,7 +350,7 @@ export default function Home() {
       />
 
       {/* Main content */}
-      <main className="flex-1 flex flex-col items-center justify-center px-8 -mt-8">
+      <main className="flex-1 flex flex-col items-center justify-center px-8">
         {gameState === "finished" ? (
           <Results {...getResults()} onRestart={restartGame} />
         ) : (
@@ -367,9 +369,9 @@ export default function Home() {
         )}
       </main>
 
-      {/* Keyboard */}
+      {/* Keyboard - centered at bottom */}
       {gameState !== "finished" && (
-        <footer className="pb-6 px-8 mt-auto">
+        <footer className="pb-4 pt-2 flex justify-center overflow-x-auto">
           <Keyboard pressedKeys={pressedKeys} />
         </footer>
       )}

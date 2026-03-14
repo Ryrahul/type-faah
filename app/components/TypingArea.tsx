@@ -57,10 +57,10 @@ export default function TypingArea({
   return (
     <div className="relative w-full max-w-[860px] mx-auto">
       {/* Timer + Live WPM display */}
-      <div className="flex items-end gap-6 mb-8">
+      <div className="flex items-baseline gap-5 mb-8 min-h-[60px]">
         {timerDuration > 0 && (
           <div
-            className="text-5xl font-extralight tracking-tight tabular-nums"
+            className="text-5xl font-extralight tracking-tight tabular-nums min-w-[80px]"
             style={{
               color: "var(--accent)",
               fontFamily: "var(--font-geist-mono)",
@@ -71,40 +71,44 @@ export default function TypingArea({
             {timeLeft !== null ? timeLeft : timerDuration}
           </div>
         )}
-        {isRunning && liveWpm > 0 && (
-          <div
-            className="flex items-baseline gap-1.5 pb-1.5 transition-opacity duration-500"
-            style={{ opacity: 0.5 }}
+        {/* Always reserve space for WPM to avoid layout shift */}
+        <div
+          className="flex items-baseline gap-1.5 min-w-[70px]"
+          style={{
+            opacity: isRunning && liveWpm > 0 ? 0.45 : 0,
+            transition: "opacity 0.6s ease",
+          }}
+        >
+          <span
+            className="text-2xl font-extralight tabular-nums"
+            style={{
+              color: "var(--text)",
+              fontFamily: "var(--font-geist-mono)",
+              minWidth: "40px",
+              display: "inline-block",
+            }}
           >
-            <span
-              className="text-2xl font-extralight tabular-nums"
-              style={{
-                color: "var(--text)",
-                fontFamily: "var(--font-geist-mono)",
-              }}
-            >
-              {liveWpm}
-            </span>
-            <span
-              className="text-[10px] uppercase tracking-[0.15em]"
-              style={{ color: "var(--text-dim)" }}
-            >
-              wpm
-            </span>
-          </div>
-        )}
+            {liveWpm}
+          </span>
+          <span
+            className="text-[10px] uppercase tracking-[0.15em]"
+            style={{ color: "var(--text-dim)" }}
+          >
+            wpm
+          </span>
+        </div>
       </div>
 
-      {/* Typing area */}
+      {/* Typing area - no top fade, only bottom fade */}
       <div
         ref={containerRef}
         onClick={onFocus}
-        className="relative h-[130px] overflow-hidden cursor-text select-none"
+        className="relative h-[140px] overflow-hidden cursor-text select-none"
         style={{
           maskImage:
-            "linear-gradient(to bottom, transparent 0%, black 15%, black 65%, transparent 100%)",
+            "linear-gradient(to bottom, black 0%, black 70%, transparent 100%)",
           WebkitMaskImage:
-            "linear-gradient(to bottom, transparent 0%, black 15%, black 65%, transparent 100%)",
+            "linear-gradient(to bottom, black 0%, black 70%, transparent 100%)",
         }}
       >
         <div
@@ -233,7 +237,7 @@ export default function TypingArea({
 
       {/* Restart hint */}
       <div
-        className="flex items-center justify-center gap-2 mt-10 text-sm transition-opacity duration-300"
+        className="flex items-center justify-center gap-2 mt-8 text-sm transition-opacity duration-300"
         style={{
           color: "var(--text-dim)",
           opacity: isRunning ? 0.5 : 0,
