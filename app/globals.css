@@ -128,6 +128,106 @@
   --border: #5a5430;
 }
 
+[data-theme="midnight"] {
+  --bg: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-card: #121820;
+  --text: #c9d1d9;
+  --text-dim: #484f58;
+  --text-correct: #58a6ff;
+  --text-error: #f85149;
+  --accent: #58a6ff;
+  --accent-secondary: #79c0ff;
+  --key-bg: #e6edf3;
+  --key-bg-alt: #a0b8d0;
+  --key-bg-accent: #58a6ff;
+  --key-text: #0d1117;
+  --key-shadow: #8899aa;
+  --key-active: #d0dbe6;
+  --cursor: #58a6ff;
+  --border: #30363d;
+}
+
+[data-theme="forest"] {
+  --bg: #1a2418;
+  --bg-secondary: #283828;
+  --bg-card: #1f2e1e;
+  --text: #d4ddd0;
+  --text-dim: #5a6e55;
+  --text-correct: #6ecf6e;
+  --text-error: #e06060;
+  --accent: #6ecf6e;
+  --accent-secondary: #8fdf8f;
+  --key-bg: #e8f5e4;
+  --key-bg-alt: #b8dab5;
+  --key-bg-accent: #6ecf6e;
+  --key-text: #1a2418;
+  --key-shadow: #8aaa85;
+  --key-active: #d5ecd0;
+  --cursor: #6ecf6e;
+  --border: #3a5038;
+}
+
+[data-theme="copper"] {
+  --bg: #2a201a;
+  --bg-secondary: #3d3028;
+  --bg-card: #322820;
+  --text: #e0d5c8;
+  --text-dim: #7a6a58;
+  --text-correct: #d4915c;
+  --text-error: #e05555;
+  --accent: #d4915c;
+  --accent-secondary: #e0a878;
+  --key-bg: #f5ebe0;
+  --key-bg-alt: #e0c8a8;
+  --key-bg-accent: #d4915c;
+  --key-text: #2a201a;
+  --key-shadow: #b8a088;
+  --key-active: #ece0d0;
+  --cursor: #d4915c;
+  --border: #504038;
+}
+
+[data-theme="arctic"] {
+  --bg: #1c2630;
+  --bg-secondary: #283848;
+  --bg-card: #223040;
+  --text: #d8e4ec;
+  --text-dim: #5c7080;
+  --text-correct: #80d8e0;
+  --text-error: #f07070;
+  --accent: #80d8e0;
+  --accent-secondary: #a0e8ef;
+  --key-bg: #e8f4f8;
+  --key-bg-alt: #b0d8e0;
+  --key-bg-accent: #80d8e0;
+  --key-text: #1c2630;
+  --key-shadow: #90b0b8;
+  --key-active: #d5eef2;
+  --cursor: #80d8e0;
+  --border: #384858;
+}
+
+[data-theme="mono"] {
+  --bg: #181818;
+  --bg-secondary: #252525;
+  --bg-card: #1e1e1e;
+  --text: #d4d4d4;
+  --text-dim: #555555;
+  --text-correct: #b0b0b0;
+  --text-error: #c85050;
+  --accent: #b0b0b0;
+  --accent-secondary: #c8c8c8;
+  --key-bg: #e8e8e8;
+  --key-bg-alt: #c0c0c0;
+  --key-bg-accent: #909090;
+  --key-text: #181818;
+  --key-shadow: #999999;
+  --key-active: #d8d8d8;
+  --cursor: #b0b0b0;
+  --border: #333333;
+}
+
 * {
   margin: 0;
   padding: 0;

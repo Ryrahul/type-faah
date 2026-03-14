@@ -10,6 +10,11 @@ const themes = [
   { id: "rose", color: "#f48fb1", label: "Rose" },
   { id: "coral", color: "#ff7043", label: "Coral" },
   { id: "amber", color: "#ffd54f", label: "Amber" },
+  { id: "midnight", color: "#58a6ff", label: "Midnight" },
+  { id: "forest", color: "#6ecf6e", label: "Forest" },
+  { id: "copper", color: "#d4915c", label: "Copper" },
+  { id: "arctic", color: "#80d8e0", label: "Arctic" },
+  { id: "mono", color: "#888888", label: "Mono" },
 ];
 
 const timerOptions = [15, 30, 60, 120];
