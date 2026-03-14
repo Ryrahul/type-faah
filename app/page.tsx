@@ -29,7 +29,7 @@ export default function Home() {
 
   // Game state
   const [gameState, setGameState] = useState<GameState>("idle");
-  const [words, setWords] = useState<string[]>(() => generateWords(200, "mixed"));
+  const [words, setWords] = useState<string[]>(() => generateWords(200, "hindi"));
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [currentCharIndex, setCurrentCharIndex] = useState(0);
   const [typedChars, setTypedChars] = useState<TypedChar[][]>([]);
