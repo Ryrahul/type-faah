@@ -51,7 +51,7 @@ export const commonWords = [
 ];
 
 export const curseWords = [
-  // English
+  // English profanity
   "fuck", "shit", "damn", "ass", "bitch", "bastard", "crap", "dick",
   "piss", "hell", "douche", "moron", "idiot", "dumbass", "jackass",
   "asshole", "bullshit", "motherfucker", "fucker", "shithead",
@@ -61,7 +61,10 @@ export const curseWords = [
   "jerk", "loser", "clown", "fool", "buffoon", "dunce",
   "bloody", "bugger", "bollocks", "tosser", "pillock", "plonker",
   "muppet", "numpty", "bellend", "git", "sod", "arse",
-  // Hindi (romanized)
+  "whore", "slut", "skank", "tramp", "hag", "sleaze",
+  "turd", "fuckwit", "shitbag", "cocksucker", "cumstain",
+  "fuckface", "shitshow", "clusterfuck", "shitstorm", "dirtbag",
+  // Hindi gaalis (romanized) - comprehensive
   "chutiya", "madarchod", "behenchod", "bhosdike", "gaandu",
   "harami", "kameena", "saala", "kutte", "gadhe",
   "ullu", "bewakoof", "pagal", "chapri", "jhandu",
@@ -73,10 +76,29 @@ export const curseWords = [
   "gandmasti", "bhenchod", "laudu", "jhatu", "chakka",
   "panauti", "duffer", "lodu", "bhadwa", "raand",
   "tharki", "chamcha", "gulel", "dhakkan", "phattu",
-  // Mixed fun phrases (typed as single words)
+  "chutiyapa", "gaandphat", "bhosadpappu", "laudiya",
+  "jhaant", "chutad", "gaandmein", "maderchod",
+  "behen", "saali", "kutiya", "suar", "janwar",
+  "haraami", "harkati", "gandagi", "gandphat",
+  "charsi", "nashebaaz", "taklu", "motu", "langda",
+  "langoor", "bandar", "suarki", "bhikari", "chhakka",
+  "hijda", "tuchha", "gira", "kachra", "keeda",
+  "makoda", "cockroach", "chuhaa", "gadhedh", "dhonghi",
+  "pakhandhi", "bikau", "dalal", "tattisoch", "galiz",
+  "gandu", "bhenchod", "madarchod", "chutmarike",
+  "bhosdiwale", "lodebaaz", "chutiyagiri", "randibaaz",
+  "haraamzaade", "kamini", "saand", "bhains", "bakri",
+  "chutmaari", "gaandphati", "lauda", "lund", "chut",
+  "bhosda", "gaand", "jhaatu", "phuddu", "phuddi",
+  "chinal", "besharmi", "haramipana", "badmaash",
+  "gundaa", "lafangaa", "loafer", "awaara", "bigda",
+  "nikammi", "nalayaki", "bevda", "sharaabi", "nashebaazi",
+  // Internet slang / gaming rage
   "wtf", "lmao", "stfu", "gtfo", "smh", "bruh", "fml",
   "yolo", "noob", "trash", "toxic", "salty", "tryhard",
   "rage", "tilt", "copium", "ratio", "cringe", "boomer",
+  "malding", "kekw", "pepega", "dogshit", "braindead",
+  "ggez", "diffed", "gapped", "washed", "hardstuck",
 ];
 
 export function generateWords(count: number, mode: WordMode = "normal"): string[] {

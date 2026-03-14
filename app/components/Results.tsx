@@ -35,7 +35,7 @@ export default function Results({
         {wpm}
       </div>
       <div
-        className="text-[11px] uppercase tracking-[0.45em] font-medium mt-3 mb-14"
+        className="text-[11px] uppercase tracking-[0.45em] font-medium mt-3 mb-20"
         style={{ color: "var(--text-dim)" }}
       >
         words per minute
@@ -43,7 +43,7 @@ export default function Results({
 
       {/* Stats grid - 4 columns, fixed widths */}
       <div
-        className="grid grid-cols-4 w-full mb-14"
+        className="grid grid-cols-4 w-full mb-20"
         style={{ maxWidth: "560px" }}
       >
         <div className="text-center py-1">
@@ -70,12 +70,13 @@ export default function Results({
       {/* Restart */}
       <button
         onClick={onRestart}
-        className="group flex items-center gap-3 px-8 py-3.5 rounded-xl text-[14px] font-medium tracking-wide transition-all duration-300 hover:scale-[1.04] active:scale-[0.96]"
+        className="group flex items-center gap-3 px-8 py-3.5 rounded-xl text-[14px] font-medium tracking-wide transition-all duration-300 hover:scale-[1.04] active:scale-[0.96] "
         style={{
           backgroundColor: "var(--bg-secondary)",
           color: "var(--accent)",
           border: "1px solid var(--border)",
           boxShadow: "0 2px 12px rgba(0,0,0,0.15)",
+          padding: "10px 20px",
         }}
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-500 group-hover:rotate-[-180deg]">

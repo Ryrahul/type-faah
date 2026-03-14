@@ -369,7 +369,7 @@ export default function Home() {
         wordMode={wordMode}
         onWordModeChange={(mode) => {
           setWordMode(mode);
-          setWords(generateWords(200, mode));
+          wordModeRef.current = mode; // update ref immediately
           restartGame();
         }}
       />
