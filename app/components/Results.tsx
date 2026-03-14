@@ -40,7 +40,7 @@ export default function Results({
 
   return (
     <div className="w-full flex flex-col items-center fade-in-up px-4">
-      {/* WPM + Achievement combined */}
+      {/* WPM number */}
       <div
         className="text-[130px] font-extralight tabular-nums leading-none"
         style={{ color: "var(--accent)", fontFamily: "var(--font-geist-mono)" }}
@@ -48,35 +48,39 @@ export default function Results({
         {wpm}
       </div>
       <div
-        className="text-[11px] uppercase tracking-[0.45em] font-medium mt-2"
+        className="text-[11px] uppercase tracking-[0.45em] font-medium mt-2 mb-8"
         style={{ color: "var(--text-dim)" }}
       >
         words per minute
       </div>
+
+      {/* Achievement */}
       <div
-        className="text-[12px] uppercase tracking-[0.25em] font-bold mt-4"
+        className="text-[13px] uppercase tracking-[0.3em] font-bold"
         style={{ color: achievement.color }}
       >
         {achievement.title}
       </div>
       <div
-        className="text-[11px] mt-1"
+        className="text-[12px] mt-2 mb-4"
         style={{ color: "var(--text-dim)", opacity: 0.7 }}
       >
         {achievement.sub}
       </div>
+
+      {/* Next tier hint */}
       {achievement.next && (
         <div
-          className="text-[10px] mt-3 mb-14 tracking-wide px-4 py-2 rounded-lg"
-          style={{ color: "var(--text)", opacity: 0.4, backgroundColor: "var(--bg-secondary)" }}
+          className="text-[11px] tracking-wide px-5 py-2.5 rounded-full mb-10"
+          style={{ color: "var(--text)", opacity: 0.45, border: "1px solid var(--border)" }}
         >
           {achievement.next}
         </div>
       )}
-      {!achievement.next && <div className="mb-14" />}
+      {!achievement.next && <div className="mb-10" />}
 
-      {/* Stats row */}
-      <div className="grid grid-cols-4 w-full mb-14" style={{ maxWidth: "520px" }}>
+      {/* Stats */}
+      <div className="grid grid-cols-4 w-full mb-12" style={{ maxWidth: "520px" }}>
         <StatCell label="raw" value={rawWpm.toString()} />
         <StatCell label="accuracy" value={`${accuracy}%`} highlight={accuracy >= 90} border />
         <StatCell label="correct/err" value={correctChars.toString()} sub={`/${incorrectChars}`} border />
