@@ -203,9 +203,9 @@ export default function Keyboard({ pressedKeys }: KeyboardProps) {
         <Key code="Backslash" label="\\" symbol="|" isPressed={k("Backslash")} />
       </div>
 
-      {/* Row 3: Home row */}
+      {/* Row 3: Home row - 13 keys, needs caps+return to fill same width */}
       <div style={{ display: "flex", gap: G, marginBottom: G }}>
-        <Key code="CapsLock" label="caps lock" w={1.85} isPressed={k("CapsLock")} />
+        <Key code="CapsLock" label="caps lock" w={1.88} isPressed={k("CapsLock")} />
         <Key code="KeyA" label="A" isPressed={k("KeyA")} />
         <Key code="KeyS" label="S" isPressed={k("KeyS")} />
         <Key code="KeyD" label="D" isPressed={k("KeyD")} />
@@ -217,12 +217,12 @@ export default function Keyboard({ pressedKeys }: KeyboardProps) {
         <Key code="KeyL" label="L" isPressed={k("KeyL")} />
         <Key code="Semicolon" label=";" symbol=":" isPressed={k("Semicolon")} />
         <Key code="Quote" label="'" symbol={'"'} isPressed={k("Quote")} />
-        <Key code="Enter" icon={<IconCornerDownLeft size={18} />} w={1.68} isPressed={k("Enter")} />
+        <Key code="Enter" icon={<IconCornerDownLeft size={18} />} w={1.71} isPressed={k("Enter")} />
       </div>
 
-      {/* Row 4: Shift row */}
+      {/* Row 4: Shift row - 12 keys */}
       <div style={{ display: "flex", gap: G, marginBottom: G }}>
-        <Key code="ShiftLeft" icon={<IconArrowBigUp size={18} />} w={2.35} isPressed={k("ShiftLeft")} />
+        <Key code="ShiftLeft" icon={<IconArrowBigUp size={18} />} w={2.42} isPressed={k("ShiftLeft")} />
         <Key code="KeyZ" label="Z" isPressed={k("KeyZ")} />
         <Key code="KeyX" label="X" isPressed={k("KeyX")} />
         <Key code="KeyC" label="C" isPressed={k("KeyC")} />
@@ -233,26 +233,24 @@ export default function Keyboard({ pressedKeys }: KeyboardProps) {
         <Key code="Comma" label="," symbol="<" isPressed={k("Comma")} />
         <Key code="Period" label="." symbol=">" isPressed={k("Period")} />
         <Key code="Slash" label="/" symbol="?" isPressed={k("Slash")} />
-        <Key code="ShiftRight" icon={<IconArrowBigUp size={18} />} w={2.35} isPressed={k("ShiftRight")} />
+        <Key code="ShiftRight" icon={<IconArrowBigUp size={18} />} w={2.42} isPressed={k("ShiftRight")} />
       </div>
 
       {/* Row 5: Bottom row with arrow cluster */}
       <div style={{ display: "flex", gap: G, alignItems: "flex-end" }}>
         <Key code="Fn" label="fn" isPressed={k("Fn")} corner="bl" />
-        <Key code="ControlLeft" label="ctrl" w={1.05} isPressed={k("ControlLeft")} />
-        <Key code="AltLeft" label="opt" w={1.05} isPressed={k("AltLeft")} />
-        <Key code="MetaLeft" icon={<IconCommand size={15} />} w={1.3} isPressed={k("MetaLeft")} />
-        <Key code="Space" label="" w={5.65} isPressed={k("Space")} />
-        <Key code="MetaRight" icon={<IconCommand size={15} />} w={1.3} isPressed={k("MetaRight")} />
-        <Key code="AltRight" label="opt" w={1.05} isPressed={k("AltRight")} />
+        <Key code="ControlLeft" label="ctrl" w={1.08} isPressed={k("ControlLeft")} />
+        <Key code="AltLeft" label="opt" w={1.08} isPressed={k("AltLeft")} />
+        <Key code="MetaLeft" icon={<IconCommand size={15} />} w={1.34} isPressed={k("MetaLeft")} />
+        <Key code="Space" label="" w={5.34} isPressed={k("Space")} />
+        <Key code="MetaRight" icon={<IconCommand size={15} />} w={1.34} isPressed={k("MetaRight")} />
+        <Key code="AltRight" label="opt" w={1.08} isPressed={k("AltRight")} />
 
-        {/* Arrow keys - 3 keys wide, stacked */}
+        {/* Arrow keys */}
         <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-          {/* Up arrow centered */}
           <div style={{ display: "flex", justifyContent: "center" }}>
             <Key code="ArrowUp" icon={<IconChevronUp size={13} />} halfH isPressed={k("ArrowUp")} />
           </div>
-          {/* Left, Down, Right */}
           <div style={{ display: "flex", gap: "2px" }}>
             <Key code="ArrowLeft" icon={<IconChevronLeft size={13} />} halfH isPressed={k("ArrowLeft")} corner="bl" />
             <Key code="ArrowDown" icon={<IconChevronDown size={13} />} halfH isPressed={k("ArrowDown")} />
